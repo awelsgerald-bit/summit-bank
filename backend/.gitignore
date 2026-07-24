@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+.env
+summit_bank.db
+.pytest_cache/
