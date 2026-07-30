@@ -7,16 +7,9 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     environment: str = "development"
+    allowed_origins: list[str] = ["http://localhost:5173"]
 
-    allowed_origins: list[str] = [
-        "http://localhost:5173",
-        "https://summit-bank-fawn.vercel.app",
-    ]
-
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
 settings = Settings()
