@@ -20,6 +20,8 @@ class Transaction(Base):
     transaction_type = Column(Enum(TransactionType), nullable=False)
     amount = Column(Numeric(14, 2), nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
+    currency = Column(String(10), nullable=False, default="USD")
+    exchange_rate = Column(Numeric(20, 2), nullable=True)  # rate used, only set for BTC transactions
 
     # Nullable because a deposit has no sender, a withdrawal has no receiver
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -29,3 +31,5 @@ class Transaction(Base):
 
     sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_transactions")
     receiver = relationship("User", foreign_keys=[receiver_id], back_populates="received_transactions")
+
+    
