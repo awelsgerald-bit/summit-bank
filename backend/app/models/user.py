@@ -1,7 +1,6 @@
-from datetime import datetime, timezone
-
 from sqlalchemy import Column, Integer, String, Numeric, DateTime
 from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
 
 from app.database import Base
 
@@ -15,18 +14,12 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     account_number = Column(String(20), unique=True, index=True, nullable=False)
     balance = Column(Numeric(14, 2), nullable=False, default=0)
+    role = Column(String(20), nullable=False, default="user")  # "user" or "admin"
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # Transactions where this user was the sender
     sent_transactions = relationship(
-        "Transaction",
-        foreign_keys="Transaction.sender_id",
-        back_populates="sender",
+        "Transaction", foreign_keys="Transaction.sender_id", back_populates="sender"
     )
-
-    # Transactions where this user was the receiver
     received_transactions = relationship(
-        "Transaction",
-        foreign_keys="Transaction.receiver_id",
-        back_populates="receiver",
+        "Transaction", foreign_keys="Transaction.receiver_id", back_populates="receiver"
     )
