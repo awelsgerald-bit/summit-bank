@@ -29,5 +29,6 @@ class AdminTransactionResponse(BaseModel):
     receiver_id: Optional[int]
     receiver_account_number: Optional[str] = None
     description: Optional[str]
+    status: str
 
     model_config = ConfigDict(from_attributes=True)

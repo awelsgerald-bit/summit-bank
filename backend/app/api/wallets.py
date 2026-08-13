@@ -1,3 +1,4 @@
+from fastapi import Query
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from decimal import Decimal
@@ -45,7 +46,7 @@ def get_rate(
 @router.post("/{currency}/deposit", status_code=status.HTTP_201_CREATED)
 def deposit_to_wallet(
     currency: str,
-    amount_usd: Decimal,
+    amount_usd: Decimal = Query(..., gt=0),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

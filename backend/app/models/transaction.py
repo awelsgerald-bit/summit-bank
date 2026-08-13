@@ -22,7 +22,8 @@ class Transaction(Base):
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
     currency = Column(String(10), nullable=False, default="USD")
     exchange_rate = Column(Numeric(20, 2), nullable=True)  # rate used, only set for BTC transactions
-
+    status = Column(String(20), nullable=False, default="pending")
+    
     # Nullable because a deposit has no sender, a withdrawal has no receiver
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     receiver_id = Column(Integer, ForeignKey("users.id"), nullable=True)

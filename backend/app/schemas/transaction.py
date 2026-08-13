@@ -31,5 +31,5 @@ class TransactionResponse(BaseModel):
     sender_id: Optional[int]
     receiver_id: Optional[int]
     description: Optional[str]
-
+    status: str
     model_config = ConfigDict(from_attributes=True)

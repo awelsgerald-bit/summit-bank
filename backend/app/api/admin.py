@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.schemas.admin import AdminTransactionResponse
+from app.services import admin_service
 from app.database import get_db
 from app.dependencies import require_admin
 from app.models.transaction import Transaction
@@ -82,3 +84,31 @@ def set_manual_rate(
     db.commit()
     db.refresh(rate_row)
     return rate_row
+
+@router.get("/transactions/pending", response_model=list[AdminTransactionResponse])
+def get_pending_transactions(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    pending = admin_service.list_pending_transactions(db)
+    return [_to_receipt(t) for t in pending]
+
+
+@router.post("/transactions/{transaction_id}/approve", response_model=AdminTransactionResponse)
+def approve_transaction(
+    transaction_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    tx = admin_service.approve_transaction(db, transaction_id)
+    return _to_receipt(tx)
+
+
+@router.post("/transactions/{transaction_id}/reject", response_model=AdminTransactionResponse)
+def reject_transaction(
+    transaction_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    tx = admin_service.reject_transaction(db, transaction_id)
+    return _to_receipt(tx)
