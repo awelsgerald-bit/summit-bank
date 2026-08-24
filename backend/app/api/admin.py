@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.schemas.admin import AdminTransactionResponse
+from app.schemas.admin import AdminTransactionResponse, AdminUserResponse
 from app.services import admin_service
 from app.database import get_db
 from app.dependencies import require_admin
 from app.models.transaction import Transaction
 from app.models.user import User
-from app.schemas.admin import AdminTransactionResponse, AdminUserResponse
 from app.models.exchange_rate import ExchangeRate
 from app.schemas.exchange_rate import ExchangeRateResponse, ManualRateRequest
 
@@ -37,32 +36,46 @@ def list_all_transactions(
     return [_to_receipt(t) for t in transactions]
 
 
+@router.get("/transactions/pending", response_model=list[AdminTransactionResponse])
+def get_pending_transactions(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    pending = admin_service.list_pending_transactions(db)
+    return [_to_receipt(t) for t in pending]
+
+
 @router.get("/transactions/{transaction_id}", response_model=AdminTransactionResponse)
 def get_transaction_receipt(
     transaction_id: int,
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    from fastapi import HTTPException, status
-
     tx = db.query(Transaction).filter(Transaction.id == transaction_id).first()
     if not tx:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
     return _to_receipt(tx)
 
 
-def _to_receipt(tx: Transaction) -> AdminTransactionResponse:
-    return AdminTransactionResponse(
-        id=tx.id,
-        transaction_type=tx.transaction_type,
-        amount=tx.amount,
-        timestamp=tx.timestamp,
-        sender_id=tx.sender_id,
-        sender_account_number=tx.sender.account_number if tx.sender else None,
-        receiver_id=tx.receiver_id,
-        receiver_account_number=tx.receiver.account_number if tx.receiver else None,
-        description=tx.description,
-    )
+@router.post("/transactions/{transaction_id}/approve", response_model=AdminTransactionResponse)
+def approve_transaction(
+    transaction_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    tx = admin_service.approve_transaction(db, transaction_id)
+    return _to_receipt(tx)
+
+
+@router.post("/transactions/{transaction_id}/reject", response_model=AdminTransactionResponse)
+def reject_transaction(
+    transaction_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    tx = admin_service.reject_transaction(db, transaction_id)
+    return _to_receipt(tx)
+
 
 @router.put("/rates/{currency}", response_model=ExchangeRateResponse)
 def set_manual_rate(
@@ -85,30 +98,17 @@ def set_manual_rate(
     db.refresh(rate_row)
     return rate_row
 
-@router.get("/transactions/pending", response_model=list[AdminTransactionResponse])
-def get_pending_transactions(
-    admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
-):
-    pending = admin_service.list_pending_transactions(db)
-    return [_to_receipt(t) for t in pending]
 
-
-@router.post("/transactions/{transaction_id}/approve", response_model=AdminTransactionResponse)
-def approve_transaction(
-    transaction_id: int,
-    admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
-):
-    tx = admin_service.approve_transaction(db, transaction_id)
-    return _to_receipt(tx)
-
-
-@router.post("/transactions/{transaction_id}/reject", response_model=AdminTransactionResponse)
-def reject_transaction(
-    transaction_id: int,
-    admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
-):
-    tx = admin_service.reject_transaction(db, transaction_id)
-    return _to_receipt(tx)
+def _to_receipt(tx: Transaction) -> AdminTransactionResponse:
+    return AdminTransactionResponse(
+        id=tx.id,
+        transaction_type=tx.transaction_type,
+        amount=tx.amount,
+        timestamp=tx.timestamp,
+        sender_id=tx.sender_id,
+        sender_account_number=tx.sender.account_number if tx.sender else None,
+        receiver_id=tx.receiver_id,
+        receiver_account_number=tx.receiver.account_number if tx.receiver else None,
+        description=tx.description,
+        status=tx.status,
+    )
