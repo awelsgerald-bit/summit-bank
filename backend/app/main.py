@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import accounts, auth, admin, transactions, wallets, beneficiaries
+from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.database import Base, engine
@@ -25,6 +25,7 @@ app.include_router(transactions.router)
 app.include_router(admin.router)
 app.include_router(wallets.router)
 app.include_router(beneficiaries.router)
+app.include_router(loans.router)
 
 
 @app.get("/health")

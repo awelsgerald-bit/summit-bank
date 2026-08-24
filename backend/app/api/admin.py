@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.schemas.loan import LoanResponse
+from app.services import loan_service
 from app.schemas.admin import AdminTransactionResponse, AdminUserResponse
 from app.services import admin_service
 from app.database import get_db
@@ -44,6 +46,30 @@ def get_pending_transactions(
     pending = admin_service.list_pending_transactions(db)
     return [_to_receipt(t) for t in pending]
 
+@router.get("/loans/pending", response_model=list[LoanResponse])
+def get_pending_loans(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return loan_service.list_pending_loans(db)
+
+
+@router.post("/loans/{loan_id}/approve", response_model=LoanResponse)
+def approve_loan(
+    loan_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return loan_service.approve_loan(db, loan_id)
+
+
+@router.post("/loans/{loan_id}/reject", response_model=LoanResponse)
+def reject_loan(
+    loan_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return loan_service.reject_loan(db, loan_id)
 
 @router.get("/transactions/{transaction_id}", response_model=AdminTransactionResponse)
 def get_transaction_receipt(
