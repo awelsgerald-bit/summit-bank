@@ -12,6 +12,7 @@ class User(Base):
     full_name = Column(String(150), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    beneficiaries = relationship("Beneficiary", back_populates="user")
     account_number = Column(String(20), unique=True, index=True, nullable=False)
     balance = Column(Numeric(14, 2), nullable=False, default=0)
     role = Column(String(20), nullable=False, default="user")  # "user" or "admin"
