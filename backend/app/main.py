@@ -1,12 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import accounts, auth, admin, transactions
+from app.api import accounts, auth, admin, transactions, wallets, beneficiaries
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.database import Base, engine
 from app import models  # noqa: F401
-from app.api import accounts, auth, admin, transactions, wallets
 
 app = FastAPI(title="Summit Bank API", version="0.1.0")
 
@@ -25,6 +24,7 @@ app.include_router(accounts.router)
 app.include_router(transactions.router)
 app.include_router(admin.router)
 app.include_router(wallets.router)
+app.include_router(beneficiaries.router)
 
 
 @app.get("/health")
