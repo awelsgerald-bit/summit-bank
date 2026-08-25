@@ -5,8 +5,9 @@ from app.models.exchange_rate import ExchangeRate
 from app.models.beneficiary import Beneficiary
 from app.models.loan import Loan
 from app.models.fixed_deposit import FixedDeposit
+from app.models.card import CardApplication
 
 __all__ = [
     "User", "Transaction", "TransactionType", "Wallet", "ExchangeRate",
-    "Beneficiary", "Loan", "FixedDeposit",
+    "Beneficiary", "Loan", "FixedDeposit", "CardApplication",
 ]

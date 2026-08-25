@@ -18,14 +18,6 @@ def get_profile(
     fixed_deposit_service.credit_matured_deposits(db, current_user)
     return current_user
 
-
-@router.get("/balance")
-def get_balance(current_user: User = Depends(get_current_user)):
-    return {
-        "account_number": current_user.account_number,
-        "balance": current_user.balance,
-    }
-
 @router.get("/balance")
 def get_balance(
     current_user: User = Depends(get_current_user),
