@@ -19,7 +19,8 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     loans = relationship("Loan", back_populates="user")  
     wallets = relationship("Wallet", back_populates="user")
-    
+    fixed_deposits = relationship("FixedDeposit", back_populates="user")
+
     sent_transactions = relationship(
         "Transaction", foreign_keys="Transaction.sender_id", back_populates="sender"
     )
