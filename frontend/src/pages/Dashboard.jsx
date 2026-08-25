@@ -3,7 +3,7 @@ import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, History as HistoryIcon } f
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import BankCard from '../components/BankCard';
+import WalletCarousel from '../components/WalletCarousel';
 import QuickAction from '../components/QuickAction';
 import TransactionRow from '../components/TransactionRow';
 
@@ -14,7 +14,7 @@ export default function Dashboard() {
   const { showToast } = useToast();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const lastSeenIdRef = useRef(null);
+  const lastSeenApprovedIdRef = useRef(null);
   const firstLoadRef = useRef(true);
 
   const fetchHistory = useCallback(async () => {
@@ -23,23 +23,26 @@ export default function Dashboard() {
       const list = res.data;
       setTransactions(list.slice(0, 4));
 
-      if (list.length > 0) {
-        const newest = list[0];
-        if (!firstLoadRef.current && newest.id !== lastSeenIdRef.current) {
+         if (list.length > 0) {
+        // Track the newest APPROVED transaction, not just newest overall,
+        // since pending ones haven't actually moved money yet.
+        const newestApproved = list.find((t) => t.status === 'approved');
+
+        if (newestApproved && !firstLoadRef.current && newestApproved.id !== lastSeenApprovedIdRef.current) {
           const isIncoming =
-            newest.transaction_type === 'deposit' ||
-            (newest.transaction_type === 'transfer' && newest.receiver_id === user.id);
+            newestApproved.transaction_type === 'deposit' ||
+            (newestApproved.transaction_type === 'transfer' && newestApproved.receiver_id === user.id);
 
           if (isIncoming) {
-            const amount = Number(newest.amount).toLocaleString('en-US', {
+            const amount = Number(newestApproved.amount).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             });
-            showToast('Money received', `+$${amount} · ${newest.description || 'Incoming transfer'}`);
+            showToast('Money received', `+$${amount} · ${newestApproved.description || 'Incoming transfer'}`);
             refreshProfile();
           }
         }
-        lastSeenIdRef.current = newest.id;
+        if (newestApproved) lastSeenApprovedIdRef.current = newestApproved.id;
       }
       firstLoadRef.current = false;
     } catch {
@@ -59,11 +62,13 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-7 stagger">
-      <BankCard
-        accountNumber={user.account_number}
-        cardHolder={user.full_name}
-        balance={Number(user.balance)}
-        createdAt={user.created_at}
+      <WalletCarousel
+        usd={{
+          accountNumber: user.account_number,
+          cardHolder: user.full_name,
+          balance: Number(user.balance),
+          createdAt: user.created_at,
+        }}
       />
 
       <div className="grid grid-cols-4 gap-3 sm:gap-4">

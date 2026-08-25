@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Check } from 'lucide-react';
+import { ChevronLeft, Clock } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
 export default function AmountActionForm({ mode, title, endpoint, buttonLabel }) {
-  const { user, refreshProfile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -18,22 +18,27 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
     setError('');
 
     const numericAmount = parseFloat(amount);
+
     if (!numericAmount || numericAmount <= 0) {
       setError('Enter an amount greater than zero.');
       return;
     }
 
     setSubmitting(true);
+
     try {
       await api.post(endpoint, {
         amount: numericAmount,
         description: description || undefined,
       });
-      await refreshProfile();
+
       setSuccess(true);
-      setTimeout(() => navigate('/dashboard'), 1400);
+      setTimeout(() => navigate('/dashboard'), 1800);
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+      setError(
+        err.response?.data?.message ||
+        'Something went wrong. Please try again.'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -43,13 +48,25 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
     return (
       <div className="max-w-lg mx-auto fade-in">
         <div className="glass rounded-3xl p-10 text-center">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: 'rgba(52,211,153,0.15)', color: '#34D399' }}>
-            <Check size={26} />
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+            style={{
+              background: 'rgba(251,191,36,0.15)',
+              color: '#FBBF24',
+            }}
+          >
+            <Clock size={26} />
           </div>
+
           <h3 className="font-display text-lg font-medium mb-1">
-            {mode === 'deposit' ? 'Deposit successful' : 'Withdrawal successful'}
+            {mode === 'deposit'
+              ? 'Deposit submitted'
+              : 'Withdrawal submitted'}
           </h3>
-          <p className="text-sm text-[var(--text-3)]">Taking you back to your dashboard...</p>
+
+          <p className="text-sm text-[var(--text-3)]">
+            Pending admin approval. Your balance will update once it's reviewed.
+          </p>
         </div>
       </div>
     );
@@ -58,9 +75,13 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
   return (
     <div className="max-w-lg mx-auto space-y-6 stagger">
       <div className="flex items-center gap-3 mb-1">
-        <button onClick={() => navigate('/dashboard')} className="text-[var(--text-2)]">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="text-[var(--text-2)]"
+        >
           <ChevronLeft size={20} />
         </button>
+
         <h3 className="font-display text-lg font-medium">{title}</h3>
       </div>
 
@@ -74,6 +95,7 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
         <form onSubmit={handleSubmit}>
           <div className="input-field rounded-2xl px-6 py-5 flex items-center justify-center gap-2 mb-4">
             <span className="text-2xl text-[var(--text-3)]">$</span>
+
             <input
               type="number"
               step="0.01"
@@ -98,11 +120,19 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
           <p className="text-xs text-[var(--text-3)] mb-6">
             Available balance:{' '}
             <span className="font-mono text-[var(--text-2)]">
-              ${Number(user?.balance ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              $
+              {Number(user?.balance ?? 0).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </span>
           </p>
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full rounded-full py-3 text-sm font-medium">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn-primary w-full rounded-full py-3 text-sm font-medium"
+          >
             {submitting ? 'Processing...' : buttonLabel}
           </button>
         </form>

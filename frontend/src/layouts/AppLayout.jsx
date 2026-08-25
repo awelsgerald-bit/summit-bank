@@ -1,17 +1,46 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Anchor, Home, ArrowLeftRight, History, User, LogOut, Bell, Menu, ShieldCheck } from 'lucide-react';
+import {
+  Anchor,
+  Home,
+  ArrowLeftRight,
+  History,
+  User,
+  Users,
+  LogOut,
+  Bell,
+  Menu,
+  ShieldCheck,
+  QrCode,
+  HandCoins,
+  PiggyBank,
+  MoreHorizontal,
+  CreditCard,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import MoreMenuSheet from '../components/MoreMenuSheet';
 
-const navItems = [
+const primaryNav = [
   { to: '/dashboard', label: 'Home', icon: Home },
   { to: '/transfer', label: 'Send', icon: ArrowLeftRight },
   { to: '/history', label: 'Activity', icon: History },
   { to: '/profile', label: 'Profile', icon: User },
 ];
 
+// Anything added here automatically shows up in the desktop "More" section
+// and the mobile More sheet — no other wiring needed for future features.
+const moreNav = [
+  { to: '/receive', label: 'Receive', icon: QrCode },
+  { to: '/beneficiaries', label: 'Beneficiaries', icon: Users },
+  { to: '/loans', label: 'Loans', icon: HandCoins },
+  { to: '/fixed-deposits', label: 'Fixed Deposits', icon: PiggyBank },
+  { to: '/cards', label: 'Cards', icon: CreditCard },
+];
+
 export default function AppLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [moreOpen, setMoreOpen] = useState(false);
 
   function handleLogout() {
     logout();
@@ -22,9 +51,15 @@ export default function AppLayout() {
     ? user.full_name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
     : '';
 
+  function navLinkClass({ isActive }) {
+    return `flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm transition ${
+      isActive ? 'panel text-[var(--text-1)]' : 'text-[var(--text-2)] hover:text-[var(--text-1)]'
+    }`;
+  }
+
   return (
     <div className="min-h-screen flex">
-      <aside className="hidden lg:flex flex-col w-64 shrink-0 p-6 gap-1 sticky top-0 h-screen">
+      <aside className="hidden lg:flex flex-col w-64 shrink-0 p-6 gap-1 sticky top-0 h-screen overflow-y-auto">
         <div className="flex items-center gap-2.5 mb-10 px-2">
           <div className="w-8 h-8 rounded-lg grad-primary flex items-center justify-center">
             <Anchor size={16} strokeWidth={1.7} />
@@ -34,16 +69,16 @@ export default function AppLayout() {
           </span>
         </div>
 
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm transition ${
-                isActive ? 'panel text-[var(--text-1)]' : 'text-[var(--text-2)] hover:text-[var(--text-1)]'
-              }`
-            }
-          >
+        {primaryNav.map((item) => (
+          <NavLink key={item.to} to={item.to} className={navLinkClass}>
+            <item.icon size={18} strokeWidth={1.7} />
+            {item.label}
+          </NavLink>
+        ))}
+
+        <p className="text-[10px] uppercase tracking-wider text-[var(--text-3)] px-4 mt-6 mb-1">More</p>
+        {moreNav.map((item) => (
+          <NavLink key={item.to} to={item.to} className={navLinkClass}>
             <item.icon size={18} strokeWidth={1.7} />
             {item.label}
           </NavLink>
@@ -52,14 +87,14 @@ export default function AppLayout() {
         {user?.role === 'admin' && (
           <NavLink
             to="/admin/users"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm text-[var(--pink-accent)] hover:opacity-80 mt-2"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm text-[var(--pink-accent)] hover:opacity-80 mt-6"
           >
             <ShieldCheck size={18} strokeWidth={1.7} />
             Admin console
           </NavLink>
         )}
 
-        <div className="mt-auto">
+        <div className="mt-auto pt-6">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm text-[var(--text-2)] hover:text-[var(--danger)]"
@@ -94,7 +129,7 @@ export default function AppLayout() {
       </div>
 
       <nav className="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-3.5 flex gap-7 items-center z-20 shadow-2xl">
-        {navItems.map((item) => (
+        {primaryNav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -103,7 +138,12 @@ export default function AppLayout() {
             <item.icon size={20} strokeWidth={1.7} />
           </NavLink>
         ))}
+        <button onClick={() => setMoreOpen(true)} className="text-[#7C7396]">
+          <MoreHorizontal size={20} strokeWidth={1.7} />
+        </button>
       </nav>
+
+      {moreOpen && <MoreMenuSheet items={moreNav} onClose={() => setMoreOpen(false)} />}
     </div>
   );
 }

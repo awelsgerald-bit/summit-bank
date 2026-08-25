@@ -1,10 +1,13 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Anchor, Users, Receipt, LogOut, ShieldCheck } from 'lucide-react';
+import { Anchor, Users, Receipt, Clock, LogOut, ShieldCheck, HandCoins, CreditCard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const navItems = [
+  { to: '/admin/pending', label: 'Pending', icon: Clock },
+  { to: '/admin/loans', label: 'Loans', icon: HandCoins },
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/transactions', label: 'Transactions', icon: Receipt },
+  { to: '/admin/cards', label: 'Cards', icon: CreditCard },
 ];
 
 export default function AdminLayout() {
