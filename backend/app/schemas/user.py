@@ -23,7 +23,8 @@ class UserResponse(BaseModel):
     balance: Decimal
     role: str
     created_at: datetime
-
+    kyc_status: str
+    
     model_config = ConfigDict(from_attributes=True)
 
 

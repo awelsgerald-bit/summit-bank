@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.schemas.kyc import KYCSubmissionResponse, KYCRejectRequest
+from app.services import kyc_service
 from app.schemas.card import CardApplicationResponse
 from app.services import card_service
 from app.schemas.loan import LoanResponse
@@ -165,3 +167,29 @@ def reject_card(
     db: Session = Depends(get_db),
 ):
     return card_service.reject_card(db, application_id)
+
+@router.get("/kyc/pending", response_model=list[KYCSubmissionResponse])
+def get_pending_kyc(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return kyc_service.list_pending_kyc(db)
+
+
+@router.post("/kyc/{submission_id}/approve", response_model=KYCSubmissionResponse)
+def approve_kyc(
+    submission_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return kyc_service.approve_kyc(db, submission_id)
+
+
+@router.post("/kyc/{submission_id}/reject", response_model=KYCSubmissionResponse)
+def reject_kyc(
+    submission_id: int,
+    payload: KYCRejectRequest,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return kyc_service.reject_kyc(db, submission_id, payload.reason)

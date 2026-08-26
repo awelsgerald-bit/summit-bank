@@ -6,8 +6,9 @@ from app.models.beneficiary import Beneficiary
 from app.models.loan import Loan
 from app.models.fixed_deposit import FixedDeposit
 from app.models.card import CardApplication
+from app.models.kyc import KYCSubmission
 
 __all__ = [
     "User", "Transaction", "TransactionType", "Wallet", "ExchangeRate",
-    "Beneficiary", "Loan", "FixedDeposit", "CardApplication",
+    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission",
 ]

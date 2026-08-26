@@ -21,6 +21,8 @@ class User(Base):
     wallets = relationship("Wallet", back_populates="user")
     fixed_deposits = relationship("FixedDeposit", back_populates="user")
     card_applications = relationship("CardApplication", back_populates="user")
+    kyc_status = Column(String(20), nullable=False, default="unverified")
+    kyc_submissions = relationship("KYCSubmission", back_populates="user")
 
     sent_transactions = relationship(
         "Transaction", foreign_keys="Transaction.sender_id", back_populates="sender"
