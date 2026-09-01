@@ -17,6 +17,7 @@ import Receive from './pages/Receive';
 import Loans from './pages/Loans';
 import FixedDeposits from './pages/FixedDeposits';
 import Cards from './pages/Cards';
+import Kyc from './pages/Kyc';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -24,6 +25,7 @@ import AdminTransactions from './pages/admin/AdminTransactions';
 import AdminTransactionDetail from './pages/admin/AdminTransactionDetail';
 import AdminLoans from './pages/admin/AdminLoans';
 import AdminCards from './pages/admin/AdminCards';
+import AdminKyc from './pages/admin/AdminKyc';
 
 function App() {
   return (
@@ -44,6 +46,7 @@ function App() {
           <Route path="/loans" element={<Loans />} />
           <Route path="/fixed-deposits" element={<FixedDeposits />} />
           <Route path="/cards" element={<Cards />} />
+          <Route path="/kyc" element={<Kyc />} />
         </Route>
 
         <Route element={<AdminRoute />}>
@@ -55,6 +58,7 @@ function App() {
             <Route path="/admin/transactions/:id" element={<AdminTransactionDetail />} />
             <Route path="/admin/loans" element={<AdminLoans />} />
             <Route path="/admin/cards" element={<AdminCards />} />
+            <Route path="/admin/kyc" element={<AdminKyc />} />
           </Route>
         </Route>
       </Route>

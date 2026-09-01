@@ -32,4 +32,7 @@ class TransactionResponse(BaseModel):
     receiver_id: Optional[int]
     description: Optional[str]
     status: str
+    is_flagged: bool
+    flag_reasons: Optional[str]
+
     model_config = ConfigDict(from_attributes=True)

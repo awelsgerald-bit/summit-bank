@@ -5,9 +5,12 @@ from sqlalchemy.orm import Session
 
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
+from app.services import fraud_service, email_service
 
 
 def deposit(db: Session, user: User, amount: Decimal, description: str | None) -> Transaction:
+    is_flagged, reasons = fraud_service.evaluate_transaction(db, user, "deposit", amount)
+
     transaction = Transaction(
         transaction_type=TransactionType.DEPOSIT,
         amount=amount,
@@ -16,19 +19,25 @@ def deposit(db: Session, user: User, amount: Decimal, description: str | None) -
         receiver_id=user.id,
         description=description or "Deposit",
         status="pending",
+        is_flagged=is_flagged,
+        flag_reasons="; ".join(reasons) if reasons else None,
     )
     db.add(transaction)
     db.commit()
     db.refresh(transaction)
+
+    if is_flagged:
+        for admin_email in fraud_service.get_admin_emails(db):
+            email_service.send_fraud_alert_email(admin_email, transaction.id, "deposit", amount, reasons)
+
     return transaction
 
 
 def withdraw(db: Session, user: User, amount: Decimal, description: str | None) -> Transaction:
     if amount > user.balance:
-        raise HTTPException(
-            status_code=http_status.HTTP_400_BAD_REQUEST,
-            detail="Insufficient balance",
-        )
+        raise HTTPException(status_code=http_status.HTTP_400_BAD_REQUEST, detail="Insufficient balance")
+
+    is_flagged, reasons = fraud_service.evaluate_transaction(db, user, "withdrawal", amount)
 
     transaction = Transaction(
         transaction_type=TransactionType.WITHDRAWAL,
@@ -38,10 +47,17 @@ def withdraw(db: Session, user: User, amount: Decimal, description: str | None) 
         receiver_id=None,
         description=description or "Withdrawal",
         status="pending",
+        is_flagged=is_flagged,
+        flag_reasons="; ".join(reasons) if reasons else None,
     )
     db.add(transaction)
     db.commit()
     db.refresh(transaction)
+
+    if is_flagged:
+        for admin_email in fraud_service.get_admin_emails(db):
+            email_service.send_fraud_alert_email(admin_email, transaction.id, "withdrawal", amount, reasons)
+
     return transaction
 
 
@@ -56,12 +72,14 @@ def transfer(
 
     if recipient is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Recipient account not found")
-
     if recipient.id == sender.id:
         raise HTTPException(status_code=http_status.HTTP_400_BAD_REQUEST, detail="Cannot transfer to your own account")
-
     if amount > sender.balance:
         raise HTTPException(status_code=http_status.HTTP_400_BAD_REQUEST, detail="Insufficient balance")
+
+    is_flagged, reasons = fraud_service.evaluate_transaction(
+        db, sender, "transfer", amount, recipient_account_number
+    )
 
     transaction = Transaction(
         transaction_type=TransactionType.TRANSFER,
@@ -71,10 +89,17 @@ def transfer(
         receiver_id=recipient.id,
         description=description or "Transfer",
         status="pending",
+        is_flagged=is_flagged,
+        flag_reasons="; ".join(reasons) if reasons else None,
     )
     db.add(transaction)
     db.commit()
     db.refresh(transaction)
+
+    if is_flagged:
+        for admin_email in fraud_service.get_admin_emails(db):
+            email_service.send_fraud_alert_email(admin_email, transaction.id, "transfer", amount, reasons)
+
     return transaction
 
 

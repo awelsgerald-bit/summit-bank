@@ -30,5 +30,7 @@ class AdminTransactionResponse(BaseModel):
     receiver_account_number: Optional[str] = None
     description: Optional[str]
     status: str
-
+    is_flagged: bool
+    flag_reasons: Optional[str]
+    
     model_config = ConfigDict(from_attributes=True)

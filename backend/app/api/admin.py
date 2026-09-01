@@ -75,6 +75,14 @@ def reject_loan(
 ):
     return loan_service.reject_loan(db, loan_id)
 
+@router.get("/transactions/flagged", response_model=list[AdminTransactionResponse])
+def get_flagged_transactions(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    flagged = admin_service.list_flagged_transactions(db)
+    return [_to_receipt(t) for t in flagged]
+
 @router.get("/transactions/{transaction_id}", response_model=AdminTransactionResponse)
 def get_transaction_receipt(
     transaction_id: int,
@@ -141,6 +149,8 @@ def _to_receipt(tx: Transaction) -> AdminTransactionResponse:
         receiver_account_number=tx.receiver.account_number if tx.receiver else None,
         description=tx.description,
         status=tx.status,
+        is_flagged=tx.is_flagged,
+        flag_reasons=tx.flag_reasons,
     )
 
 @router.get("/cards/pending", response_model=list[CardApplicationResponse])

@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, Integer, Numeric, DateTime, ForeignKey, String, Enum
+from sqlalchemy import Column, Integer, Numeric, DateTime, ForeignKey, String, Enum, Boolean, Text
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -23,7 +23,9 @@ class Transaction(Base):
     currency = Column(String(10), nullable=False, default="USD")
     exchange_rate = Column(Numeric(20, 2), nullable=True)  # rate used, only set for BTC transactions
     status = Column(String(20), nullable=False, default="pending")
-    
+    is_flagged = Column(Boolean, nullable=False, default=False)
+    flag_reasons = Column(Text, nullable=True)
+
     # Nullable because a deposit has no sender, a withdrawal has no receiver
     sender_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     receiver_id = Column(Integer, ForeignKey("users.id"), nullable=True)

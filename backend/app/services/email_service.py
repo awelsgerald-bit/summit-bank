@@ -58,3 +58,19 @@ def send_kyc_rejected_email(to_email: str, full_name: str, reason: str | None) -
         </div>
         """,
     )
+    
+def send_fraud_alert_email(to_email: str, transaction_id: int, transaction_type: str, amount, reasons: list[str]) -> None:
+    reasons_html = "".join(f"<li>{r}</li>" for r in reasons)
+    send_email(
+        to_email,
+        f"⚠ Flagged transaction #{transaction_id} needs review",
+        f"""
+        <div style="font-family: sans-serif; padding: 24px;">
+            <h2>A transaction was flagged for review</h2>
+            <p><strong>Transaction:</strong> #{transaction_id} — {transaction_type} — ${amount}</p>
+            <p><strong>Reasons:</strong></p>
+            <ul>{reasons_html}</ul>
+            <p>Review it in the Admin Panel's Flagged queue.</p>
+        </div>
+        """,
+    )

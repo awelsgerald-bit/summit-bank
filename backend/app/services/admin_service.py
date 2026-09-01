@@ -8,11 +8,19 @@ from app.models.user import User
 def list_pending_transactions(db: Session) -> list[Transaction]:
     return (
         db.query(Transaction)
-        .filter(Transaction.status == "pending")
+        .filter(Transaction.status == "pending", Transaction.is_flagged == False)  # noqa: E712
         .order_by(Transaction.timestamp.asc())
         .all()
     )
 
+
+def list_flagged_transactions(db: Session) -> list[Transaction]:
+    return (
+        db.query(Transaction)
+        .filter(Transaction.status == "pending", Transaction.is_flagged == True)  # noqa: E712
+        .order_by(Transaction.timestamp.asc())
+        .all()
+    )
 
 def approve_transaction(db: Session, transaction_id: int) -> Transaction:
     tx = db.query(Transaction).filter(Transaction.id == transaction_id).first()
