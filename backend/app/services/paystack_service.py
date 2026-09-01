@@ -19,7 +19,7 @@ def _headers():
     return {"Authorization": f"Bearer {settings.paystack_secret_key}"}
 
 
-def initialize_payment(db: Session, user: User, amount: Decimal) -> dict:
+def initialize_payment(db: Session, user: User, amount: Decimal, callback_url: str) -> dict:
     reference = f"sb_{uuid.uuid4().hex[:20]}"
 
     response = httpx.post(
@@ -27,8 +27,9 @@ def initialize_payment(db: Session, user: User, amount: Decimal) -> dict:
         headers=_headers(),
         json={
             "email": user.email,
-            "amount": int(amount * 100),  # Paystack expects the smallest currency unit (kobo)
+            "amount": int(amount * 100),
             "reference": reference,
+            "callback_url": callback_url,
         },
         timeout=15.0,
     )

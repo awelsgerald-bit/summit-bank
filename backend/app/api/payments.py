@@ -6,6 +6,7 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.payment import PaystackInitializeRequest, PaystackInitializeResponse, PaystackPaymentResponse
 from app.services import paystack_service
+from app.core.config import settings
 
 router = APIRouter(prefix="/payments/paystack", tags=["Payments"])
 
@@ -16,7 +17,8 @@ def initialize(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return paystack_service.initialize_payment(db, current_user, payload.amount)
+    callback_url = f"{settings.frontend_url}/payment-callback"
+    return paystack_service.initialize_payment(db, current_user, payload.amount, callback_url)
 
 
 @router.get("/verify/{reference}", response_model=PaystackPaymentResponse)
