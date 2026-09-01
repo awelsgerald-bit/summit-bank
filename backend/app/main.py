@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc
+from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc, payments
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.database import Base, engine
@@ -29,6 +29,7 @@ app.include_router(loans.router)
 app.include_router(fixed_deposits.router)
 app.include_router(cards.router)
 app.include_router(kyc.router)
+app.include_router(payments.router)
 
 @app.get("/health")
 def health_check():

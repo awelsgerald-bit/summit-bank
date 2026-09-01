@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     allowed_origins: list[str] = ["http://localhost:5173"]
     resend_api_key: str = ""
-    
+    paystack_secret_key: str = "sk_test_19b0106046ceec9bdb0ec0ca569091d91b20fa4b"
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
