@@ -18,6 +18,7 @@ import Loans from './pages/Loans';
 import FixedDeposits from './pages/FixedDeposits';
 import Cards from './pages/Cards';
 import Kyc from './pages/Kyc';
+import PaymentCallback from './pages/PaymentCallback';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -26,13 +27,15 @@ import AdminTransactionDetail from './pages/admin/AdminTransactionDetail';
 import AdminLoans from './pages/admin/AdminLoans';
 import AdminCards from './pages/admin/AdminCards';
 import AdminKyc from './pages/admin/AdminKyc';
+import AdminFlagged from './pages/admin/AdminFlagged';
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
+      <Route path="/payment-callback" element={<PaymentCallback />} />
+      
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -47,6 +50,7 @@ function App() {
           <Route path="/fixed-deposits" element={<FixedDeposits />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/kyc" element={<Kyc />} />
+          
         </Route>
 
         <Route element={<AdminRoute />}>
@@ -59,6 +63,7 @@ function App() {
             <Route path="/admin/loans" element={<AdminLoans />} />
             <Route path="/admin/cards" element={<AdminCards />} />
             <Route path="/admin/kyc" element={<AdminKyc />} />
+            <Route path="/admin/flagged" element={<AdminFlagged />} />
           </Route>
         </Route>
       </Route>
