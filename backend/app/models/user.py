@@ -23,7 +23,8 @@ class User(Base):
     card_applications = relationship("CardApplication", back_populates="user")
     kyc_status = Column(String(20), nullable=False, default="unverified")
     kyc_submissions = relationship("KYCSubmission", back_populates="user")
-
+    wallet_applications = relationship("WalletApplication", back_populates="user")
+    
     sent_transactions = relationship(
         "Transaction", foreign_keys="Transaction.sender_id", back_populates="sender"
     )

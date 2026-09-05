@@ -8,8 +8,9 @@ from app.models.fixed_deposit import FixedDeposit
 from app.models.card import CardApplication
 from app.models.kyc import KYCSubmission
 from app.models.payment import PaystackPayment
+from app.models.wallet_application import WalletApplication
 
 __all__ = [
     "User", "Transaction", "TransactionType", "Wallet", "ExchangeRate",
-    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment",
+    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication",
 ]

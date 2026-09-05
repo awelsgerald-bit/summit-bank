@@ -15,6 +15,8 @@ from app.models.transaction import Transaction
 from app.models.user import User
 from app.models.exchange_rate import ExchangeRate
 from app.schemas.exchange_rate import ExchangeRateResponse, ManualRateRequest
+from app.schemas.wallet import WalletApplicationResponse
+from app.services import wallet_service as wallet_service_admin
 
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -203,3 +205,17 @@ def reject_kyc(
     db: Session = Depends(get_db),
 ):
     return kyc_service.reject_kyc(db, submission_id, payload.reason)
+
+@router.get("/wallet-applications/pending", response_model=list[WalletApplicationResponse])
+def get_pending_wallet_applications(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    return wallet_service_admin.list_pending_wallet_applications(db)
+
+
+@router.post("/wallet-applications/{application_id}/approve", response_model=WalletApplicationResponse)
+def approve_wallet_application(application_id: int, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    return wallet_service_admin.approve_wallet_application(db, application_id)
+
+
+@router.post("/wallet-applications/{application_id}/reject", response_model=WalletApplicationResponse)
+def reject_wallet_application(application_id: int, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    return wallet_service_admin.reject_wallet_application(db, application_id)
