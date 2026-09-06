@@ -18,7 +18,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     transaction_type = Column(Enum(TransactionType), nullable=False)
-    amount = Column(Numeric(14, 2), nullable=False)
+    amount = Column(Numeric(20, 8), nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True)
     currency = Column(String(10), nullable=False, default="USD")
     exchange_rate = Column(Numeric(20, 2), nullable=True)  # rate used, only set for BTC transactions
