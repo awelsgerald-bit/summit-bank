@@ -33,7 +33,7 @@ export default function BankCard({ accountNumber, cardHolder, balance, createdAt
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/5 blur-2xl" />
+        <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/5 blur-2xl pointer-events-none" />
 
         <div className="relative flex items-start justify-between mb-6">
           <div>

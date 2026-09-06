@@ -2,28 +2,46 @@ import { useRef, useState } from 'react';
 import BankCard from './BankCard';
 import BtcCardFace from './BtcCardFace';
 
+const DRAG_THRESHOLD = 10; // pixels of movement before we treat this as a swipe, not a tap
+
 export default function WalletCarousel({ usd }) {
-  const [index, setIndex] = useState(0); // 0 = USD, 1 = BTC
+  const [index, setIndex] = useState(0);
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const drag = useRef({ startX: 0 });
+  const drag = useRef({ startX: 0, pointerId: null, captured: false });
 
   function onPointerDown(e) {
     drag.current.startX = e.clientX;
+    drag.current.pointerId = e.pointerId;
+    drag.current.captured = false;
     setDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
   }
+
   function onPointerMove(e) {
     if (!dragging) return;
-    setDragX(e.clientX - drag.current.startX);
+    const delta = e.clientX - drag.current.startX;
+
+    // Only claim the pointer (and start visually dragging) once real movement happens.
+    // This lets simple taps on buttons/links inside the card pass through untouched.
+    if (!drag.current.captured && Math.abs(delta) > DRAG_THRESHOLD) {
+      e.currentTarget.setPointerCapture(drag.current.pointerId);
+      drag.current.captured = true;
+    }
+
+    if (drag.current.captured) {
+      setDragX(delta);
+    }
   }
+
   function onPointerUp() {
-    if (!dragging) return;
-    const threshold = 60;
-    if (dragX < -threshold && index === 0) setIndex(1);
-    else if (dragX > threshold && index === 1) setIndex(0);
+    if (drag.current.captured) {
+      const threshold = 60;
+      if (dragX < -threshold && index === 0) setIndex(1);
+      else if (dragX > threshold && index === 1) setIndex(0);
+    }
     setDragging(false);
     setDragX(0);
+    drag.current.captured = false;
   }
 
   return (
@@ -51,7 +69,6 @@ export default function WalletCarousel({ usd }) {
           </div>
         </div>
       </div>
-
       <div className="flex items-center justify-center gap-1.5">
         {[0, 1].map((i) => (
           <button

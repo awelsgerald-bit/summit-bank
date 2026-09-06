@@ -19,6 +19,7 @@ import FixedDeposits from './pages/FixedDeposits';
 import Cards from './pages/Cards';
 import Kyc from './pages/Kyc';
 import PaymentCallback from './pages/PaymentCallback';
+import BtcWallet from './pages/BtcWallet';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -28,6 +29,7 @@ import AdminLoans from './pages/admin/AdminLoans';
 import AdminCards from './pages/admin/AdminCards';
 import AdminKyc from './pages/admin/AdminKyc';
 import AdminFlagged from './pages/admin/AdminFlagged';
+import AdminWalletApplications from './pages/admin/AdminWalletApplications';
 
 function App() {
   return (
@@ -35,7 +37,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/payment-callback" element={<PaymentCallback />} />
-      
+
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -50,7 +52,7 @@ function App() {
           <Route path="/fixed-deposits" element={<FixedDeposits />} />
           <Route path="/cards" element={<Cards />} />
           <Route path="/kyc" element={<Kyc />} />
-          
+          <Route path="/btc-wallet" element={<BtcWallet />} />
         </Route>
 
         <Route element={<AdminRoute />}>
@@ -64,6 +66,7 @@ function App() {
             <Route path="/admin/cards" element={<AdminCards />} />
             <Route path="/admin/kyc" element={<AdminKyc />} />
             <Route path="/admin/flagged" element={<AdminFlagged />} />
+            <Route path="/admin/wallet-applications" element={<AdminWalletApplications />} />
           </Route>
         </Route>
       </Route>

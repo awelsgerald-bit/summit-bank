@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { Anchor, Users, Receipt, Clock, LogOut, ShieldCheck, HandCoins, CreditCard, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { Anchor, Users, Receipt, Clock, LogOut, ShieldCheck, HandCoins, CreditCard, ShieldAlert, AlertTriangle, Bitcoin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { to: '/admin/cards', label: 'Cards', icon: CreditCard },
   { to: '/admin/kyc', label: 'KYC', icon: ShieldAlert },
   { to: '/admin/flagged', label: 'Flagged', icon: AlertTriangle },
+  { to: '/admin/wallet-applications', label: 'Wallets', icon: Bitcoin },
 ];
 
 export default function AdminLayout() {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Bitcoin, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { Bitcoin, Eye, EyeOff, Clock, XCircle, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../api/client';
 import useCountUp from '../hooks/useCountUp';
 
@@ -11,70 +12,52 @@ function formatUSD(n) {
 }
 
 export default function BtcCardFace() {
-  const [wallet, setWallet] = useState(null); // null = loading, false = not applied, object = applied
+  const [wallet, setWallet] = useState(null); // null = loading
+  const [latestApplication, setLatestApplication] = useState(null);
   const [rate, setRate] = useState(null);
   const [hidden, setHidden] = useState(false);
+
+  const [reason, setReason] = useState('');
   const [applying, setApplying] = useState(false);
-  const [amount, setAmount] = useState('');
-  const [converting, setConverting] = useState(false);
   const [error, setError] = useState('');
 
   const [displayBalance] = useCountUp(wallet ? Number(wallet.balance) : 0);
 
-  async function loadWallet() {
+  async function load() {
     try {
-      const res = await api.get('/wallets');
-      const btc = res.data.find((w) => w.currency === 'BTC');
-      setWallet(btc || false);
+      const [walletsRes, appsRes] = await Promise.all([
+        api.get('/wallets'),
+        api.get('/wallets/applications'),
+      ]);
+      const btcWallet = walletsRes.data.find((w) => w.currency === 'BTC');
+      setWallet(btcWallet || false);
+
+      const btcApps = appsRes.data.filter((a) => a.currency === 'BTC');
+      setLatestApplication(btcApps[0] || null);
     } catch {
       setWallet(false);
     }
   }
 
-  async function loadRate() {
-    try {
-      const res = await api.get('/wallets/rates/BTC');
-      setRate(Number(res.data.rate_usd));
-    } catch {
-      setRate(null);
-    }
-  }
-
   useEffect(() => {
-    loadWallet();
-    loadRate();
+    load();
+    api
+      .get('/wallets/rates/BTC')
+      .then((res) => setRate(Number(res.data.rate_usd)))
+      .catch(() => {});
   }, []);
 
-  async function handleApply() {
-    setApplying(true);
-    setError('');
-    try {
-      await api.post('/wallets/apply', { currency: 'BTC' });
-      await loadWallet();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not apply for a BTC wallet.');
-    } finally {
-      setApplying(false);
-    }
-  }
-
-  async function handleConvert(e) {
+  async function handleApply(e) {
     e.preventDefault();
     setError('');
-    const numeric = parseFloat(amount);
-    if (!numeric || numeric <= 0) {
-      setError('Enter an amount greater than zero.');
-      return;
-    }
-    setConverting(true);
+    setApplying(true);
     try {
-      await api.post('/wallets/BTC/deposit', null, { params: { amount_usd: numeric } });
-      setAmount('');
-      await loadWallet();
+      await api.post('/wallets/apply', { currency: 'BTC', reason: reason || undefined });
+      await load();
     } catch (err) {
-      setError(err.response?.data?.message || 'Conversion failed.');
+      setError(err.response?.data?.message || 'Could not submit application.');
     } finally {
-      setConverting(false);
+      setApplying(false);
     }
   }
 
@@ -88,7 +71,7 @@ export default function BtcCardFace() {
             border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/5 blur-2xl" />
+          <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/5 blur-2xl pointer-events-none" />
           {children}
         </div>
       </div>
@@ -99,38 +82,62 @@ export default function BtcCardFace() {
     return shell(<p className="relative text-sm text-white/60">Loading BTC wallet...</p>);
   }
 
+  // No wallet yet — check application status
   if (wallet === false) {
+    if (latestApplication?.status === 'pending') {
+      return shell(
+        <div className="relative flex flex-col items-center justify-center text-center h-full gap-3 py-4">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}>
+            <Clock size={22} />
+          </div>
+          <p className="text-sm font-medium">Application under review</p>
+          <p className="text-xs text-white/50">You'll get a BTC wallet once an admin approves this.</p>
+        </div>
+      );
+    }
+
     return shell(
-      <div className="relative flex flex-col items-center justify-center text-center h-full gap-4 py-4">
-        <div
-          className="w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}
-        >
-          <Bitcoin size={24} />
+      <div className="relative flex flex-col h-full py-1">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}>
+            <Bitcoin size={20} />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Apply for a BTC Wallet</p>
+            {latestApplication?.status === 'rejected' && (
+              <p className="text-xs text-[var(--danger)]">Previous application was rejected — you can reapply.</p>
+            )}
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-medium mb-1">No BTC wallet yet</p>
-          <p className="text-xs text-white/50">Apply to start holding and converting Bitcoin.</p>
-        </div>
-        {error && <p className="text-xs text-[var(--danger)]">{error}</p>}
-        <button
-          onClick={handleApply}
-          disabled={applying}
-          className="btn-primary rounded-full px-6 py-2.5 text-xs font-medium"
-        >
-          {applying ? 'Applying...' : 'Apply for BTC Wallet'}
-        </button>
+        {error && <p className="text-xs text-[var(--danger)] mb-2">{error}</p>}
+        <form onSubmit={handleApply} className="mt-auto space-y-2">
+          <textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Reason (optional)"
+            rows={2}
+            className="w-full rounded-xl px-3 py-2 text-xs bg-white/5 border border-white/10 outline-none placeholder:text-white/40 resize-none"
+          />
+          <button
+            type="submit"
+            disabled={applying}
+            className="btn-primary w-full rounded-full py-2.5 text-xs font-medium disabled:opacity-60"
+          >
+            {applying ? 'Submitting...' : 'Submit Application'}
+          </button>
+        </form>
       </div>
     );
   }
 
+  // Wallet exists
   return shell(
     <>
       <div className="relative flex items-start justify-between mb-6">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-white/50 mb-1">BTC Wallet</p>
           <div className="flex items-center gap-2">
-            <h2 className="font-display text-xl sm:text-2xl font-semibold balance-value">
+            <h2 id="btc-balance" className="font-display text-xl sm:text-2xl font-semibold balance-value">
               {hidden ? '••••••' : formatBTC(displayBalance)}
             </h2>
             <button onClick={() => setHidden((h) => !h)} className="text-white/60 hover:text-white shrink-0">
@@ -139,43 +146,18 @@ export default function BtcCardFace() {
           </div>
           {!hidden && rate && <p className="text-xs text-white/50 mt-1">≈ {formatUSD(displayBalance * rate)}</p>}
         </div>
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}
-        >
+        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'rgba(251,191,36,0.15)', color: '#FBBF24' }}>
           <Bitcoin size={20} />
         </div>
       </div>
 
-      <div className="relative mt-auto">
-        {error && <p className="text-xs text-[var(--danger)] mb-2">{error}</p>}
-        <form onSubmit={handleConvert} className="flex items-center gap-2">
-          <div
-            className="rounded-full px-4 py-2.5 flex items-center gap-1 flex-1"
-            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-          >
-            <span className="text-white/50 text-sm">$</span>
-            <input
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              type="number"
-              step="0.01"
-              min="0.01"
-              placeholder="Convert amount"
-              className="bg-transparent w-full text-sm outline-none placeholder:text-white/40"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={converting}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-[#1B0E3A] disabled:opacity-60"
-            style={{ background: 'linear-gradient(135deg,#FDE68A,#FBBF24)' }}
-          >
-            <ArrowRight size={16} />
-          </button>
-        </form>
-        {rate && <p className="text-[10px] text-white/40 mt-2">1 BTC ≈ {formatUSD(rate)}</p>}
-      </div>
+      <Link
+        to="/btc-wallet"
+        className="relative mt-auto btn-primary rounded-full py-2.5 text-xs font-medium flex items-center justify-center gap-1.5"
+      >
+        Manage BTC Wallet <ArrowRight size={14} />
+      </Link>
+      {rate && <p className="relative text-[10px] text-white/40 mt-2 text-center">1 BTC ≈ {formatUSD(rate)}</p>}
     </>
   );
-}
+} 
