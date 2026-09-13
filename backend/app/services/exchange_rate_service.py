@@ -11,12 +11,12 @@ def fetch_live_rate(currency: str) -> float:
     coingecko_id = CURRENCY_TO_COINGECKO_ID[currency]
     response = httpx.get(
         COINGECKO_URL,
-        params={"ids": coingecko_id, "vs_currencies": "usd"},
+        params={"ids": coingecko_id, "vs_currencies": "ngn"},
         timeout=10.0,
     )
     response.raise_for_status()
     data = response.json()
-    return data[coingecko_id]["usd"]
+    return data[coingecko_id]["ngn"]
 
 
 def get_current_rate(db: Session, currency: str) -> ExchangeRate:

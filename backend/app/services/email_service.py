@@ -67,7 +67,7 @@ def send_fraud_alert_email(to_email: str, transaction_id: int, transaction_type:
         f"""
         <div style="font-family: sans-serif; padding: 24px;">
             <h2>A transaction was flagged for review</h2>
-            <p><strong>Transaction:</strong> #{transaction_id} — {transaction_type} — ${amount}</p>
+            <p><strong>Transaction:</strong> #{transaction_id} — {transaction_type} — ₦{amount}</p>
             <p><strong>Reasons:</strong></p>
             <ul>{reasons_html}</ul>
             <p>Review it in the Admin Panel's Flagged queue.</p>

@@ -42,11 +42,11 @@ def get_rate(currency: str, db: Session = Depends(get_db), current_user: User = 
 
 @router.post("/BTC/deposit", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 def deposit_btc(
-    amount_usd: Decimal,
+    amount_ngn: Decimal,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return wallet_transaction_service.deposit_btc(db, current_user, amount_usd, None)
+    return wallet_transaction_service.deposit_btc(db, current_user, amount_ngn, None)
 
 
 @router.post("/BTC/withdraw", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)

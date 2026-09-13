@@ -51,7 +51,7 @@ export default function BtcWallet() {
     setSubmitting(true);
     try {
       if (tab === 'deposit') {
-        await api.post('/wallets/BTC/deposit', null, { params: { amount_usd: numeric } });
+        await api.post('/wallets/BTC/deposit', null, { params: { amount_ngn: numeric } });
       } else if (tab === 'withdraw') {
         await api.post('/wallets/BTC/withdraw', null, { params: { amount_btc: numeric } });
       } else {
@@ -99,7 +99,7 @@ export default function BtcWallet() {
             <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wide">Balance</p>
             <p className="font-mono text-sm">{formatBTC(wallet.balance)} BTC</p>
           </div>
-          {rate && <p className="text-xs text-[var(--text-3)]">1 BTC ≈ ${rate.toLocaleString()}</p>}
+          {rate && <p className="text-xs text-[var(--text-3)]">1 BTC ≈ ₦{rate.toLocaleString()}</p>}
         </div>
       )}
 
@@ -138,10 +138,10 @@ export default function BtcWallet() {
 
         <div>
           <label className="text-xs text-[var(--text-2)] mb-1.5 block">
-            {tab === 'deposit' ? 'Amount (USD to convert)' : 'Amount (BTC)'}
+            {tab === 'deposit' ? 'Amount (NGN to convert)' : 'Amount (BTC)'}
           </label>
           <div className="input-field rounded-xl px-4 py-2.5 flex items-center gap-1">
-            <span className="text-[var(--text-3)] text-sm">{tab === 'deposit' ? '$' : '₿'}</span>
+            <span className="text-[var(--text-3)] text-sm">{tab === 'deposit' ? '₦' : '₿'}</span>
             <input
               type="number"
               step="0.00000001"

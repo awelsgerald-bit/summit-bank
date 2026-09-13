@@ -3,7 +3,7 @@ import { HandCoins, Clock, CheckCircle2, XCircle, Banknote } from 'lucide-react'
 import api from '../api/client';
 
 function formatMoney(n) {
-  return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 const statusMeta = {
@@ -111,7 +111,7 @@ export default function Loans() {
           <div>
             <label className="text-xs text-[var(--text-2)] mb-1.5 block">Amount</label>
             <div className="input-field rounded-xl px-4 py-2.5 flex items-center gap-1">
-              <span className="text-[var(--text-3)] text-sm">$</span>
+              <span className="text-[var(--text-3)] text-sm">₦</span>
               <input
                 type="number"
                 step="0.01"
@@ -210,7 +210,7 @@ export default function Loans() {
                     )}
                     <div className="flex gap-2">
                       <div className="input-field rounded-full px-3 py-1.5 flex items-center gap-1 flex-1">
-                        <span className="text-[var(--text-3)] text-xs">$</span>
+                        <span className="text-[var(--text-3)] text-xs">₦</span>
                         <input
                           type="number"
                           step="0.01"

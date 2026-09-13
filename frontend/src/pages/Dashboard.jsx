@@ -38,7 +38,7 @@ export default function Dashboard() {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             });
-            showToast('Money received', `+$${amount} · ${newestApproved.description || 'Incoming transfer'}`);
+            showToast('Money received', `+₦${amount} · ${newestApproved.description || 'Incoming transfer'}`);
             refreshProfile();
           }
         }

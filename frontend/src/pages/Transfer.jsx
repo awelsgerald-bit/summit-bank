@@ -265,7 +265,7 @@ export default function Transfer() {
           </label>
 
           <div className="input-field rounded-xl px-4 py-3 flex items-center gap-1">
-            <span className="text-[var(--text-3)]">$</span>
+            <span className="text-[var(--text-3)]">₦</span>
 
             <input
               type="number"
@@ -304,8 +304,8 @@ export default function Transfer() {
             </p>
 
             <p className="font-display text-lg font-semibold">
-              $
-              {Number(user?.balance ?? 0).toLocaleString('en-US', {
+              ₦
+              {Number(user?.balance ?? 0).toLocaleString('en-NG', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import useCountUp from '../hooks/useCountUp';
 
 function formatMoney(n) {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatAccountNumber(num) {

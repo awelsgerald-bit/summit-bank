@@ -43,7 +43,7 @@ export default function PaystackDeposit() {
 
       <form onSubmit={handlePay}>
         <div className="input-field rounded-2xl px-6 py-5 flex items-center justify-center gap-2 mb-6">
-          <span className="text-2xl text-[var(--text-3)]">$</span>
+          <span className="text-2xl text-[var(--text-3)]">₦</span>
           <input
             type="number"
             step="0.01"

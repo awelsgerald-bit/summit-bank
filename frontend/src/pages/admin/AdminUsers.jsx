@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 import api from '../../api/client';
 
 function formatMoney(n) {
-  return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export default function AdminUsers() {

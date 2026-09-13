@@ -1,7 +1,7 @@
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, Clock, X } from 'lucide-react';
 
 function formatMoney(n) {
-  return '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatDate(iso) {

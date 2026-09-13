@@ -8,7 +8,7 @@ function formatBTC(n) {
   return n.toLocaleString('en-US', { minimumFractionDigits: 6, maximumFractionDigits: 6 }) + ' BTC';
 }
 function formatUSD(n) {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export default function BtcCardFace() {

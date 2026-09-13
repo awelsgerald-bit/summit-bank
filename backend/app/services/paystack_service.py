@@ -28,6 +28,7 @@ def initialize_payment(db: Session, user: User, amount: Decimal, callback_url: s
         json={
             "email": user.email,
             "amount": int(amount * 100),
+            "currency": "NGN",
             "reference": reference,
             "callback_url": callback_url,
         },

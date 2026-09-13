@@ -9,11 +9,11 @@ from app.models.wallet import Wallet
 from app.services import exchange_rate_service, wallet_service
 
 
-def deposit_btc(db: Session, user: User, amount_usd: Decimal, description: str | None) -> Transaction:
+def deposit_btc(db: Session, user: User, amount_ngn: Decimal, description: str | None) -> Transaction:
     wallet_service.get_wallet(db, user, "BTC")  # raises 404 if none exists
 
     rate = exchange_rate_service.get_current_rate(db, "BTC")
-    converted_amount = amount_usd / rate.rate_usd
+    converted_amount = amount_ngn / rate.rate_usd
 
     transaction = Transaction(
         transaction_type=TransactionType.DEPOSIT,
@@ -21,7 +21,7 @@ def deposit_btc(db: Session, user: User, amount_usd: Decimal, description: str |
         currency="BTC",
         exchange_rate=rate.rate_usd,
         receiver_id=user.id,
-        description=description or f"BTC deposit — ${amount_usd} @ ${rate.rate_usd}/BTC",
+        description=description or f"BTC deposit — ${amount_ngn} @ ${rate.rate_usd}/BTC",
         status="pending",
     )
     db.add(transaction)

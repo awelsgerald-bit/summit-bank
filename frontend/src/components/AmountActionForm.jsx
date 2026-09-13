@@ -94,7 +94,7 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
 
         <form onSubmit={handleSubmit}>
           <div className="input-field rounded-2xl px-6 py-5 flex items-center justify-center gap-2 mb-4">
-            <span className="text-2xl text-[var(--text-3)]">$</span>
+            <span className="text-2xl text-[var(--text-3)]">₦</span>
 
             <input
               type="number"
@@ -120,8 +120,8 @@ export default function AmountActionForm({ mode, title, endpoint, buttonLabel })
           <p className="text-xs text-[var(--text-3)] mb-6">
             Available balance:{' '}
             <span className="font-mono text-[var(--text-2)]">
-              $
-              {Number(user?.balance ?? 0).toLocaleString('en-US', {
+              ₦
+              {Number(user?.balance ?? 0).toLocaleString('en-NG', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}

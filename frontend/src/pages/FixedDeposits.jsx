@@ -4,7 +4,7 @@ import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
 function formatMoney(n) {
-  return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function daysRemaining(maturesAt) {
@@ -91,7 +91,7 @@ export default function FixedDeposits() {
           <div>
             <label className="text-xs text-[var(--text-2)] mb-1.5 block">Amount to lock</label>
             <div className="input-field rounded-xl px-4 py-2.5 flex items-center gap-1">
-              <span className="text-[var(--text-3)] text-sm">$</span>
+              <span className="text-[var(--text-3)] text-sm">₦</span>
               <input
                 type="number"
                 step="0.01"
