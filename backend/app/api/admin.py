@@ -17,7 +17,7 @@ from app.models.exchange_rate import ExchangeRate
 from app.schemas.exchange_rate import ExchangeRateResponse, ManualRateRequest
 from app.schemas.wallet import WalletApplicationResponse
 from app.services import wallet_service as wallet_service_admin
-
+from app.services import ledger_service
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -138,6 +138,16 @@ def set_manual_rate(
     db.refresh(rate_row)
     return rate_row
 
+@router.get("/ledger/reconcile/{user_id}")
+def reconcile_user_ledger(
+    user_id: int,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return ledger_service.reconcile_user(db, user)
 
 def _to_receipt(tx: Transaction) -> AdminTransactionResponse:
     return AdminTransactionResponse(

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
 from app.models.wallet import Wallet
-
+from app.services import ledger_service
 
 def list_pending_transactions(db: Session) -> list[Transaction]:
     return (
@@ -62,6 +62,11 @@ def _approve_usd(db: Session, tx: Transaction) -> None:
         receiver = db.query(User).filter(User.id == tx.receiver_id).with_for_update().first()
         receiver.balance = receiver.balance + tx.amount
 
+        ledger_service.record_deposit(
+            db, user_id=receiver.id, amount=tx.amount, currency="NGN",
+            reference_transaction_id=tx.id,
+        )
+
     elif tx.transaction_type == TransactionType.WITHDRAWAL:
         sender = db.query(User).filter(User.id == tx.sender_id).with_for_update().first()
         if tx.amount > sender.balance:
@@ -81,6 +86,11 @@ def _approve_btc(db: Session, tx: Transaction) -> None:
     if tx.transaction_type == TransactionType.DEPOSIT:
         wallet = db.query(Wallet).filter(Wallet.user_id == tx.receiver_id, Wallet.currency == "BTC").with_for_update().first()
         wallet.balance = wallet.balance + tx.amount
+
+        ledger_service.record_deposit(
+            db, user_id=tx.receiver_id, amount=tx.amount, currency="BTC",
+            reference_transaction_id=tx.id,
+        )
 
     elif tx.transaction_type == TransactionType.WITHDRAWAL:
         wallet = db.query(Wallet).filter(Wallet.user_id == tx.sender_id, Wallet.currency == "BTC").with_for_update().first()
