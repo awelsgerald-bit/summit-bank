@@ -14,7 +14,7 @@ def deposit(db: Session, user: User, amount: Decimal, description: str | None) -
     transaction = Transaction(
         transaction_type=TransactionType.DEPOSIT,
         amount=amount,
-        currency="USD",
+        currency="NGN",
         sender_id=None,
         receiver_id=user.id,
         description=description or "Deposit",
@@ -42,7 +42,7 @@ def withdraw(db: Session, user: User, amount: Decimal, description: str | None) 
     transaction = Transaction(
         transaction_type=TransactionType.WITHDRAWAL,
         amount=amount,
-        currency="USD",
+        currency="NGN",
         sender_id=user.id,
         receiver_id=None,
         description=description or "Withdrawal",
@@ -84,7 +84,7 @@ def transfer(
     transaction = Transaction(
         transaction_type=TransactionType.TRANSFER,
         amount=amount,
-        currency="USD",
+        currency="NGN",
         sender_id=sender.id,
         receiver_id=recipient.id,
         description=description or "Transfer",

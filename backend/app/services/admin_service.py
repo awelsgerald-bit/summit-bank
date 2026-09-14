@@ -31,7 +31,7 @@ def approve_transaction(db: Session, transaction_id: int) -> Transaction:
     if tx.status != "pending":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Transaction is already {tx.status}")
 
-    if tx.currency == "USD":
+    if tx.currency in ("USD", "NGN"):
         _approve_usd(db, tx)
     elif tx.currency == "BTC":
         _approve_btc(db, tx)
