@@ -229,3 +229,11 @@ def approve_wallet_application(application_id: int, admin: User = Depends(requir
 @router.post("/wallet-applications/{application_id}/reject", response_model=WalletApplicationResponse)
 def reject_wallet_application(application_id: int, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     return wallet_service_admin.reject_wallet_application(db, application_id)
+
+@router.post("/ledger/backfill-deposits")
+def backfill_deposits(
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    return ledger_service.backfill_approved_deposits(db)
+    

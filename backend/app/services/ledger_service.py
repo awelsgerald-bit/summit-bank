@@ -152,3 +152,36 @@ def reconcile_user(db: Session, user: User) -> dict:
         }
 
     return results
+
+
+def backfill_approved_deposits(db: Session) -> dict:
+    """
+    One-time operation: walks every approved DEPOSIT transaction and ensures
+    it has corresponding ledger entries. Idempotent — safe to re-run.
+    """
+    from app.models.transaction import Transaction, TransactionType
+
+    approved_deposits = (
+        db.query(Transaction)
+        .filter(Transaction.transaction_type == TransactionType.DEPOSIT, Transaction.status == "approved")
+        .all()
+    )
+
+    created = 0
+    skipped = 0
+
+    for tx in approved_deposits:
+        currency = tx.currency if tx.currency in ("NGN", "BTC") else "NGN"  # normalize any lingering old "USD" rows
+
+        if already_recorded(db, tx.id, "deposit"):
+            skipped += 1
+            continue
+
+        record_deposit(
+            db, user_id=tx.receiver_id, amount=tx.amount, currency=currency,
+            reference_transaction_id=tx.id,
+        )
+        created += 1
+
+    db.commit()
+    return {"total_approved_deposits": len(approved_deposits), "newly_backfilled": created, "already_had_entries": skipped}
