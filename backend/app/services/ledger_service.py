@@ -153,7 +153,6 @@ def reconcile_user(db: Session, user: User) -> dict:
 
     return results
 
-
 def backfill_approved_deposits(db: Session) -> dict:
     """
     One-time operation: walks every approved DEPOSIT transaction and ensures

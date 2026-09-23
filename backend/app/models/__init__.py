@@ -10,8 +10,8 @@ from app.models.kyc import KYCSubmission
 from app.models.payment import PaystackPayment
 from app.models.wallet_application import WalletApplication
 from app.models.ledger import LedgerAccount, LedgerEntry
-
+from app.models.strowallet_account import StroWalletAccount
 __all__ = [
     "User", "Transaction", "TransactionType", "Wallet", "ExchangeRate",
-    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication","LedgerAccount", "LedgerEntry"
+    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication","LedgerAccount", "LedgerEntry","StroWalletAccount"
 ]

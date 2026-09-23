@@ -24,6 +24,8 @@ class User(Base):
     kyc_status = Column(String(20), nullable=False, default="unverified")
     kyc_submissions = relationship("KYCSubmission", back_populates="user")
     wallet_applications = relationship("WalletApplication", back_populates="user")
+    strowallet_account = relationship("StroWalletAccount", back_populates="user", uselist=False)
+    phone_number = Column(String(20), nullable=True)
     
     sent_transactions = relationship(
         "Transaction", foreign_keys="Transaction.sender_id", back_populates="sender"

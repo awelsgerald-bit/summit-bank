@@ -12,5 +12,9 @@ class Settings(BaseSettings):
     paystack_secret_key: str = "sk_test_19b0106046ceec9bdb0ec0ca569091d91b20fa4b"
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
     frontend_url: str = "http://localhost:5173"
-
+    strowallet_public_key: str = ""
+    strowallet_base_url: str = "https://strowallet.com/api"
+    strowallet_webhook_secret: str = ""  # our own shared secret for compensating verification, not StroWallet's
+    backend_base_url: str = "https://summit-bank-1.onrender.com"
+    strowallet_mode: str = "sandbox"  # switch to "live" only after sandbox is fully proven
 settings = Settings()
