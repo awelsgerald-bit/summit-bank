@@ -32,6 +32,7 @@ def create_user(db: Session, user_data: UserRegister) -> User:
         hashed_password=hash_password(user_data.password),
         account_number=generate_account_number(db),
         balance=0,
+        phone_number=user_data.phone_number,
     )
     db.add(user)
     db.commit()

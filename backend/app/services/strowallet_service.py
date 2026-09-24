@@ -39,11 +39,16 @@ def apply_for_account(db: Session, user: User) -> StroWalletAccount:
                 "public_key": settings.strowallet_public_key,
                 "email": user.email,
                 "account_name": user.full_name,
-                "phone": user.phone_number if hasattr(user, "phone_number") else "N/A",
+                "phone": user.phone_number,
                 "webhook_url": webhook_url,
                 "mode": settings.strowallet_mode,  # "sandbox" or "live"
             },
             timeout=20.0,
+        if not user.phone_number:
+            account.status = "failed"
+            account.failure_reason = "Phone number required before applying for a StroWallet account."
+            db.commit()
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Add a phone number to your profile first.")
         )
     except httpx.HTTPError as e:
         account.status = "failed"

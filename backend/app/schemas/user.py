@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
@@ -8,6 +9,7 @@ class UserRegister(BaseModel):
     full_name: str = Field(min_length=2, max_length=150)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    phone_number: str = Field(min_length=10, max_length=20)
 
 
 class UserLogin(BaseModel):
@@ -24,7 +26,8 @@ class UserResponse(BaseModel):
     role: str
     created_at: datetime
     kyc_status: str
-    
+    phone_number: Optional[str] = None
+
     model_config = ConfigDict(from_attributes=True)
 
 
