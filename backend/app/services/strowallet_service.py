@@ -62,7 +62,6 @@ def apply_for_account(db: Session, user: User) -> StroWalletAccount:
         db.commit()
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Could not reach StroWallet right now.")
 
-        print(f"[StroWallet] Raw response ({response.status_code}): {response.text[:1000]}")
 
     data = response.json() if response.headers.get("content-type", "").startswith("application/json") else {}
 
