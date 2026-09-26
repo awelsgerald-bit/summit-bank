@@ -6,6 +6,8 @@ from app.core.config import settings
 from app.models.strowallet_account import StroWalletAccount
 from app.models.user import User
 
+from datetime import datetime, timezone
+
 STROWALLET_CREATE_ACCOUNT_URL = f"{settings.strowallet_base_url}/virtual-bank/new-customer/"
 
 
@@ -76,12 +78,16 @@ def apply_for_account(db: Session, user: User) -> StroWalletAccount:
     # NOTE: exact field names below are StroWallet's documented response shape as of
     # this integration date — confirm these against your live sandbox response the
     # first time this runs, since third-party API response shapes can drift.
-    account.nuban_account_number = data.get("accountNumber")
-    account.bank_name = data.get("bankName", "Nombank MFB")
-    account.account_name = data.get("accountName", user.full_name)
-    account.strowallet_customer_reference = data.get("sessionId") or data.get("customerId")
+    account_number = data.get("account_number")
+    account.nuban_account_number = str(account_number) if account_number else None
+    account.bank_name = data.get("bank_name", "Nombank MFB")
+    account.account_name = data.get("account_name", user.full_name)
+    account.strowallet_customer_reference = data.get("sessionId") or data.get("session_id")
     account.status = "active" if account.nuban_account_number else "failed"
-    if account.status == "failed":
+    if account.status == "active":
+        account.activated_at = datetime.now(timezone.utc)
+        account.failure_reason = None
+    else:
         account.failure_reason = f"StroWallet response missing account number. Raw: {response.text[:500]}"
     db.commit()
     db.refresh(account)
