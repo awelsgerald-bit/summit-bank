@@ -82,8 +82,7 @@ def apply_for_account(db: Session, user: User) -> StroWalletAccount:
     account.strowallet_customer_reference = data.get("sessionId") or data.get("customerId")
     account.status = "active" if account.nuban_account_number else "failed"
     if account.status == "failed":
-        account.failure_reason = "StroWallet response missing account number"
-
+        account.failure_reason = f"StroWallet response missing account number. Raw: {response.text[:500]}"
     db.commit()
     db.refresh(account)
     return account
