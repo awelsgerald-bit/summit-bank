@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, status
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
-from fastapi import Request
 from datetime import datetime, timezone
 import json
 
@@ -14,7 +14,11 @@ from app.core.config import settings
 router = APIRouter(prefix="/strowallet", tags=["StroWallet"])
 
 
-@router.post("/apply", response_model=StroWalletAccountResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/apply",
+    response_model=StroWalletAccountResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 def apply_for_account(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -22,30 +26,58 @@ def apply_for_account(
     return strowallet_service.apply_for_account(db, current_user)
 
 
-@router.get("/my-account", response_model=StroWalletAccountResponse)
+@router.get(
+    "/my-account",
+    response_model=StroWalletAccountResponse,
+)
 def get_my_account(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     account = strowallet_service.get_my_account(db, current_user)
+
     if not account:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail="No StroWallet account found. Apply first.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No StroWallet account found. Apply first.",
+        )
+
     return account
 
-@router.post("/webhook")
-async def strowallet_webhook(request: Request, token: str = ""):
-    # Compensating control #1: our own shared-secret token, since StroWallet doesn't sign payloads
-    if token != settings.strowallet_webhook_secret:
-        return {"received": False, "reason": "invalid token"}
 
+@router.post("/webhook")
+async def strowallet_webhook(
+    request: Request,
+    token: str = "",
+):
+    # Reject requests that do not contain our configured shared token.
+    if (
+        not settings.strowallet_webhook_secret
+        or token != settings.strowallet_webhook_secret
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid webhook token",
+        )
+
+    # Temporary diagnostic endpoint only.
+    # This endpoint MUST NOT credit balances or create transactions.
     raw_body = await request.body()
+
     try:
         payload = json.loads(raw_body)
-    except Exception:
-        payload = {"_unparsed": raw_body.decode("utf-8", errors="replace")}
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid JSON payload",
+        )
 
-    # TEMPORARY, Step 2a only: log it so we can see the real shape, credit nothing yet
-    print(f"[StroWallet Webhook] {datetime.now(timezone.utc).isoformat()} — {json.dumps(payload)}")
+    # Log the event for sandbox investigation.
+    # Never log the shared token or other credentials.
+    print(
+        f"[StroWallet Webhook] "
+        f"{datetime.now(timezone.utc).isoformat()} — "
+        f"{json.dumps(payload)}"
+    )
 
     return {"received": True}
