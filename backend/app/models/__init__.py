@@ -11,7 +11,8 @@ from app.models.payment import PaystackPayment
 from app.models.wallet_application import WalletApplication
 from app.models.ledger import LedgerAccount, LedgerEntry
 from app.models.strowallet_account import StroWalletAccount
+from app.models.strowallet_webhook_event import StroWalletWebhookEvent
 __all__ = [
     "User", "Transaction", "TransactionType", "Wallet", "ExchangeRate",
-    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication","LedgerAccount", "LedgerEntry","StroWalletAccount"
+    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication","LedgerAccount", "LedgerEntry","StroWalletAccount", "StroWalletWebhookEvent"
 ]
