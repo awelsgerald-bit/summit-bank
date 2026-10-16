@@ -2,12 +2,13 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
+from typing import Optional
 import json
 
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
-from app.schemas.strowallet import StroWalletAccountResponse
+from app.schemas.strowallet import StroWalletAccountResponse, StroWalletApplyRequest
 from app.services import strowallet_service
 from app.core.config import settings
 
@@ -20,10 +21,12 @@ router = APIRouter(prefix="/strowallet", tags=["StroWallet"])
     status_code=status.HTTP_201_CREATED,
 )
 def apply_for_account(
+    payload: Optional[StroWalletApplyRequest] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return strowallet_service.apply_for_account(db, current_user)
+    phone = payload.phone if payload else None
+    return strowallet_service.apply_for_account(db, current_user, phone)
 
 
 @router.get(
