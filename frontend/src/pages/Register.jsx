@@ -9,6 +9,7 @@ export default function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -17,6 +18,12 @@ export default function Register() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    
+    const cleanPhone = phone.replace(/[\s-]/g, '');
+    if (!/^(0\d{10}|\+234\d{10})$/.test(cleanPhone)) {
+      setError('Enter a valid Nigerian phone number, e.g. 08012345678.');
+      return;
+    }
 
     if (password.length < 8) {
       setError('Password must be at least 8 characters.');
@@ -29,7 +36,7 @@ export default function Register() {
 
     setSubmitting(true);
     try {
-      await register(fullName, email, password);
+      await register(fullName, email, password, cleanPhone);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Could not create your account.');
@@ -82,6 +89,19 @@ export default function Register() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
+                  className="bg-transparent w-full text-sm outline-none placeholder:text-[var(--text-3)]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-[var(--text-2)] mb-1.5 block">Phone number</label>
+              <div className="input-field rounded-xl px-4 py-3">
+                <input
+                  type="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="08012345678"
                   className="bg-transparent w-full text-sm outline-none placeholder:text-[var(--text-3)]"
                 />
               </div>
