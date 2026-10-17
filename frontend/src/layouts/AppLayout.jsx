@@ -17,6 +17,7 @@ import {
   MoreHorizontal,
   CreditCard,
   ShieldAlert,
+  Landmark,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import MoreMenuSheet from '../components/MoreMenuSheet';
@@ -37,6 +38,7 @@ const moreNav = [
   { to: '/fixed-deposits', label: 'Fixed Deposits', icon: PiggyBank },
   { to: '/cards', label: 'Cards', icon: CreditCard },
   { to: '/kyc', label: 'Verify Identity', icon: ShieldAlert },
+  { to: '/bank-account', label: 'Bank Account', icon: Landmark },
 ];
 
 export default function AppLayout() {
