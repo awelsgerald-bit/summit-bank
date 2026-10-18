@@ -1,8 +1,12 @@
 import requests
+import os
+
+TEST_EMAIL = os.environ["SUMMIT_TEST_EMAIL"]
+TEST_PASSWORD = os.environ["SUMMIT_TEST_PASSWORD"]
 
 BASE_URL = "https://summit-bank-1.onrender.com"
-EMAIL = "autotest@example.com"
-PASSWORD = "strongpassword123"
+EMAIL = TEST_EMAIL
+PASSWORD = TEST_PASSWORD
 
 
 def login():
@@ -58,7 +62,7 @@ def run():
     assert r.json()["kyc_status"] == "verified"
 
     print("\nAll KYC checks passed ✅")
-    print("Check the inbox for autotest@example.com (or Resend's dashboard logs) to confirm the approval email sent.")
+    print("Check the test account's inbox (or Resend's dashboard logs) to confirm the approval email sent.")
 
 
 if __name__ == "__main__":

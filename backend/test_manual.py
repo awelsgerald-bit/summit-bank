@@ -1,4 +1,8 @@
 import requests
+import os
+
+TEST_EMAIL = os.environ["SUMMIT_TEST_EMAIL"]
+TEST_PASSWORD = os.environ["SUMMIT_TEST_PASSWORD"]
 
 
 BASE_URL = "https://summit-bank-1.onrender.com"
@@ -8,14 +12,14 @@ def run():
     # 1. Register
     register_payload = {
         "full_name": "Awele Test",
-        "email": "autotest@example.com",
-        "password": "strongpassword123",
+        "email": TEST_EMAIL,
+        "password": TEST_PASSWORD,
     }
     r = requests.post(f"{BASE_URL}/auth/register", json=register_payload)
     print("Register:", r.status_code, r.json())
 
     # 2. Login
-    login_payload = {"email": "autotest@example.com", "password": "strongpassword123"}
+    login_payload = {"email": TEST_EMAIL, "password": TEST_PASSWORD}
     r = requests.post(f"{BASE_URL}/auth/login", json=login_payload)
     print("Login:", r.status_code, r.json())
     token = r.json()["access_token"]
@@ -37,7 +41,7 @@ def run():
 
 def run_transactions():
     # Log in as user 1
-    r = requests.post(f"{BASE_URL}/auth/login", json={"email": "autotest@example.com", "password": "strongpassword123"})
+    r = requests.post(f"{BASE_URL}/auth/login", json={"email": TEST_EMAIL, "password": TEST_PASSWORD})
     token = r.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -57,9 +61,9 @@ def run_transactions():
     requests.post(f"{BASE_URL}/auth/register", json={
         "full_name": "Recipient User",
         "email": "recipient@example.com",
-        "password": "strongpassword123",
+        "password": TEST_PASSWORD,
     })
-    r = requests.post(f"{BASE_URL}/auth/login", json={"email": "recipient@example.com", "password": "strongpassword123"})
+    r = requests.post(f"{BASE_URL}/auth/login", json={"email": "recipient@example.com", "password": TEST_PASSWORD})
     recipient_token = r.json()["access_token"]
     r = requests.get(f"{BASE_URL}/account/profile", headers={"Authorization": f"Bearer {recipient_token}"})
     recipient_account = r.json()["account_number"]
@@ -90,7 +94,7 @@ def run_transactions():
 
 
 def run_history():
-    r = requests.post(f"{BASE_URL}/auth/login", json={"email": "autotest@example.com", "password": "strongpassword123"})
+    r = requests.post(f"{BASE_URL}/auth/login", json={"email": TEST_EMAIL, "password": TEST_PASSWORD})
     token = r.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 

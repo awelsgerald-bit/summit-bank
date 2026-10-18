@@ -1,8 +1,12 @@
 import requests
+import os
+
+TEST_EMAIL = os.environ["SUMMIT_TEST_EMAIL"]
+TEST_PASSWORD = os.environ["SUMMIT_TEST_PASSWORD"]
 
 BASE_URL = "https://summit-bank-1.onrender.com"
-ADMIN_EMAIL = "autotest@example.com"
-ADMIN_PASSWORD = "strongpassword123"
+ADMIN_EMAIL = TEST_EMAIL
+ADMIN_PASSWORD = TEST_PASSWORD
 
 
 def login(email, password):
