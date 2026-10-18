@@ -12,7 +12,7 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.strowallet import StroWalletAccountResponse, StroWalletApplyRequest
-from app.services import strowallet_service, strowallet_verification_service, strowallet_webhook_service
+from app.services import strowallet_deposit_service, strowallet_service, strowallet_webhook_service
 
 logger = logging.getLogger("summit_bank.strowallet")
 
@@ -120,12 +120,12 @@ async def strowallet_webhook(
         result.event_id, result.outcome, result.status,
     )
 
-    # 4. Ask StroWallet whether the transfer really happened, AFTER we have answered. Only events
-    #    that matched an active account and parsed cleanly are worth asking about; a repeat delivery
-    #    of one that is still unverified gets another try (a lost background task heals itself).
-    #    Verifying moves no money.
-    if result.event_id is not None and result.status in strowallet_verification_service.AUTO_STATES:
-        background_tasks.add_task(strowallet_verification_service.verify_event_in_background, result.event_id)
+    # 4. AFTER we have answered: ask StroWallet whether the transfer really happened and, only if it
+    #    confirms, create a PENDING deposit for admin approval. This request itself credits nothing.
+    #    Only events that matched an active account and parsed cleanly are worth processing; a repeat
+    #    delivery of one that is not finished gets another try (a lost background task heals itself).
+    if result.event_id is not None and result.status in strowallet_deposit_service.PROCESSABLE_STATES:
+        background_tasks.add_task(strowallet_deposit_service.process_event_in_background, result.event_id)
 
     # The reply never reveals whether the event matched an account or was valid.
     return {"received": True}

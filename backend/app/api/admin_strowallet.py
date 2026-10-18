@@ -8,7 +8,7 @@ from app.dependencies import require_admin
 from app.models.strowallet_webhook_event import StroWalletWebhookEvent
 from app.models.user import User
 from app.schemas.strowallet import StroWalletEventDetail, StroWalletEventSummary
-from app.services import strowallet_verification_service
+from app.services import strowallet_deposit_service
 
 router = APIRouter(prefix="/admin/strowallet", tags=["Admin StroWallet"])
 
@@ -48,10 +48,11 @@ def retry_verification(
     admin: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
-    """Asks StroWallet again about an event that is stuck, unverified or rejected. Verifies
-    only; it never creates a deposit."""
+    """Asks StroWallet again about an event that is stuck, unverified or rejected. If StroWallet
+    confirms it (or it was already verified but its deposit was never created), a PENDING
+    deposit is created for normal admin approval. Nothing is credited here."""
     _get_event_or_404(db, event_id)
-    result = strowallet_verification_service.verify_event(db, event_id, manual=True)
+    result, _deposit = strowallet_deposit_service.process_event(db, event_id, manual=True)
     if result.outcome == "not_configured":
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
