@@ -19,4 +19,5 @@ class Settings(BaseSettings):
     strowallet_mode: str = "sandbox"  # switch to "live" only after sandbox is fully proven
     strowallet_provider: str = "sterling"  # "sterling" (tested) or "fidelity" (untested) - never Nombank
     strowallet_live_enabled: bool = False  # second switch: must ALSO be true before STROWALLET_MODE=live does anything
+    strowallet_verify_amount: str = "transaction"  # amount sent to StroWallet's verify call: "transaction" (gross) or "settled" (net). Not confirmed by StroWallet; change it here, not in code.
 settings = Settings()
