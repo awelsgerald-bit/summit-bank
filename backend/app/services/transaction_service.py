@@ -8,7 +8,14 @@ from app.models.user import User
 from app.services import fraud_service, email_service
 
 
-def deposit(db: Session, user: User, amount: Decimal, description: str | None) -> Transaction:
+def build_pending_deposit(
+    db: Session, user: User, amount: Decimal, description: str | None
+) -> tuple[Transaction, list[str]]:
+    """
+    Runs the fraud check and adds a pending deposit to the session, flushed (so it has an id)
+    but NOT committed, so a caller can tie it to other rows in one atomic commit. Returns the
+    transaction and the fraud reasons (empty when not flagged).
+    """
     is_flagged, reasons = fraud_service.evaluate_transaction(db, user, "deposit", amount)
 
     transaction = Transaction(
@@ -23,6 +30,13 @@ def deposit(db: Session, user: User, amount: Decimal, description: str | None) -
         flag_reasons="; ".join(reasons) if reasons else None,
     )
     db.add(transaction)
+    db.flush()
+    return transaction, reasons
+
+
+def deposit(db: Session, user: User, amount: Decimal, description: str | None) -> Transaction:
+    transaction, reasons = build_pending_deposit(db, user, amount, description)
+    is_flagged = transaction.is_flagged
     db.commit()
     db.refresh(transaction)
 

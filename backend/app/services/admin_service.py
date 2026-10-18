@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.models.strowallet_webhook_event import StroWalletWebhookEvent
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
 from app.models.wallet import Wallet
@@ -25,7 +26,8 @@ def list_flagged_transactions(db: Session) -> list[Transaction]:
 
 
 def approve_transaction(db: Session, transaction_id: int) -> Transaction:
-    tx = db.query(Transaction).filter(Transaction.id == transaction_id).first()
+    # Row lock: two admins approving the same deposit at once must not both credit it.
+    tx = db.query(Transaction).filter(Transaction.id == transaction_id).with_for_update().first()
     if not tx:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
     if tx.status != "pending":
@@ -45,7 +47,7 @@ def approve_transaction(db: Session, transaction_id: int) -> Transaction:
 
 
 def reject_transaction(db: Session, transaction_id: int) -> Transaction:
-    tx = db.query(Transaction).filter(Transaction.id == transaction_id).first()
+    tx = db.query(Transaction).filter(Transaction.id == transaction_id).with_for_update().first()
     if not tx:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
     if tx.status != "pending":
@@ -57,6 +59,17 @@ def reject_transaction(db: Session, transaction_id: int) -> Transaction:
     return tx
 
 
+def _strowallet_reference(db: Session, transaction_id: int) -> str | None:
+    """The StroWallet sessionId behind a deposit created from a verified bank transfer, so the
+    ledger entry can be reconciled with StroWallet. None for every other kind of deposit."""
+    event = (
+        db.query(StroWalletWebhookEvent)
+        .filter(StroWalletWebhookEvent.transaction_id == transaction_id)
+        .first()
+    )
+    return event.session_id if event is not None else None
+
+
 def _approve_usd(db: Session, tx: Transaction) -> None:
     if tx.transaction_type == TransactionType.DEPOSIT:
         receiver = db.query(User).filter(User.id == tx.receiver_id).with_for_update().first()
@@ -65,6 +78,7 @@ def _approve_usd(db: Session, tx: Transaction) -> None:
         ledger_service.record_deposit(
             db, user_id=receiver.id, amount=tx.amount, currency="NGN",
             reference_transaction_id=tx.id,
+            external_reference=_strowallet_reference(db, tx.id),
         )
 
     elif tx.transaction_type == TransactionType.WITHDRAWAL:
