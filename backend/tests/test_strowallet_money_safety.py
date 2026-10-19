@@ -180,12 +180,23 @@ def test_resending_the_same_session_with_a_bigger_amount_changes_nothing(client,
 def test_wrong_amount_reported_by_stro_wallet_is_not_verified(client, stro):
     user_id = make_user()
     make_account(user_id)
-    stro.says_verified('{"status":200,"transactionAmount":10}')  # we were told 1000
+    stro.says_verified('{"message":"Transaction received.","status":200,"transactionAmount":10}')  # we were told 1000
 
     send(client, payload(gross="1000", net="990"))
 
     [event] = events()
     assert event.status == "unverified"
+    assert count(Transaction) == 0
+
+
+def test_http_200_without_the_real_confirmation_is_not_verified(client, stro):
+    """Only StroWallet's documented success reply counts; an empty or vague 200 never does."""
+    make_account(make_user())
+    for i, body in enumerate(['{}', '{"status":200}', '{"message":"OK","status":200}', '[]', 'ok']):
+        stro.says_verified(body)
+        send(client, payload(session_id=f"ODD-{i}"))
+
+    assert {e.status for e in events()} == {"unverified"}
     assert count(Transaction) == 0
 
 
