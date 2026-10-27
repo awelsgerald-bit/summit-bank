@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Clock, QrCode } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Bookmark, ChevronLeft, Clock, QrCode } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import BankCard from '../components/BankCard';
 import QrScannerModal from '../components/QrScannerModal';
+import RecipientLookup from '../components/RecipientLookup';
+import { errorMessage } from '../utils/errors';
 
 export default function Transfer() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // "Repeat payment" on a receipt sends us here with the details filled in.
+  const prefill = location.state?.prefill || {};
 
-  const [recipientAccount, setRecipientAccount] = useState('');
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
+  const [recipientAccount, setRecipientAccount] = useState(prefill.account || '');
+  const [amount, setAmount] = useState(prefill.amount ? String(prefill.amount) : '');
+  const [description, setDescription] = useState(prefill.description || '');
+  const [lookup, setLookup] = useState(null);
+  const [savedNote, setSavedNote] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -75,6 +82,16 @@ export default function Transfer() {
       return;
     }
 
+    if (lookup?.is_self) {
+      setError("You can't send money to your own account.");
+      return;
+    }
+
+    if (lookup?.not_found) {
+      setError('No Summit Bank account has that number. Check it and try again.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -88,10 +105,7 @@ export default function Transfer() {
       // No automatic redirect so the user has time to save the beneficiary.
       setSuccess(true);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          'Transfer failed. Please try again.'
-      );
+      setError(errorMessage(err, 'Transfer failed. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -123,6 +137,26 @@ export default function Transfer() {
             Pending admin approval. Funds will move once it's reviewed.
           </p>
         </div>
+
+        <button
+          onClick={async () => {
+            try {
+              await api.post('/saved-payments', {
+                label: lookup?.name ? `To ${lookup.name}` : `To ${recipientAccount}`.slice(0, 60),
+                recipient_account_number: recipientAccount.trim(),
+                amount: parseFloat(amount),
+                description: description || undefined,
+              });
+              setSavedNote('Saved. Find it under Saved Payments.');
+            } catch (err) {
+              setSavedNote(errorMessage(err, 'Could not save this payment.'));
+            }
+          }}
+          disabled={!!savedNote}
+          className="ghost-btn w-full rounded-2xl py-2.5 text-xs flex items-center justify-center gap-2"
+        >
+          <Bookmark size={14} /> {savedNote || 'Save this payment to repeat it later'}
+        </button>
 
         {!alreadySaved && (
           <button
@@ -175,9 +209,13 @@ export default function Transfer() {
           <ChevronLeft size={20} />
         </button>
 
-        <h3 className="font-display text-lg font-medium">
+        <h3 className="font-display text-lg font-medium flex-1">
           Send Money
         </h3>
+
+        <Link to="/saved-payments" className="text-xs text-[var(--pink-accent)] flex items-center gap-1">
+          <Bookmark size={13} /> Saved payments
+        </Link>
       </div>
 
       <p className="text-sm text-[var(--text-3)] -mt-4">
@@ -246,6 +284,10 @@ export default function Transfer() {
               className="bg-transparent w-full text-sm font-mono outline-none placeholder:text-[var(--text-3)]"
             />
           </div>
+        </div>
+
+        <div className="-mt-2 min-h-[1rem]">
+          <RecipientLookup accountNumber={recipientAccount} onResult={setLookup} />
         </div>
 
         {/* Scanned Name */}

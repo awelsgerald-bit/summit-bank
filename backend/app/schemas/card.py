@@ -16,6 +16,7 @@ class CardApplicationResponse(BaseModel):
     expiry_month: Optional[int]
     expiry_year: Optional[int]
     cvv: Optional[str]
+    is_frozen: bool = False
     created_at: datetime
     approved_at: Optional[datetime]
 

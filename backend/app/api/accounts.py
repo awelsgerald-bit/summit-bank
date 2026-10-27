@@ -9,8 +9,9 @@ from app.core.security import hash_password, verify_password
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
+from app.schemas.round2 import LookupResponse
 from app.schemas.user import AvatarUpdate, PasswordChange, ProfileUpdate, UserResponse
-from app.services import fixed_deposit_service
+from app.services import fixed_deposit_service, lookup_service
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
@@ -109,3 +110,13 @@ def remove_avatar(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.get("/lookup/{account_number}", response_model=LookupResponse)
+def lookup_account(
+    account_number: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Shows who owns an account number (name partly hidden) before money is sent to it."""
+    return lookup_service.lookup_account(db, current_user, account_number)
