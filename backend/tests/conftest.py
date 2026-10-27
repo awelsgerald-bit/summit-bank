@@ -95,13 +95,23 @@ def stro(monkeypatch):
     return fake
 
 
+_hash_cache = {}
+
+
+def _hashed(password):
+    """Password hashing is deliberately slow; hash each test password only once per run."""
+    if password not in _hash_cache:
+        _hash_cache[password] = hash_password(password)
+    return _hash_cache[password]
+
+
 def make_user(email="ada@example.com", role="user", balance="50.00", password=PASSWORD):
     _counter["n"] += 1
     with SessionLocal() as db:
         user = User(
             full_name="Test User",
             email=email,
-            hashed_password=hash_password(password),
+            hashed_password=_hashed(password),
             account_number=f"90{_counter['n']:08d}",
             balance=Decimal(balance),
             role=role,
