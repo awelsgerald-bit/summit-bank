@@ -27,6 +27,7 @@ class UserResponse(BaseModel):
     created_at: datetime
     kyc_status: str
     phone_number: Optional[str] = None
+    avatar: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -34,3 +35,17 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class ProfileUpdate(BaseModel):
+    full_name: Optional[str] = Field(default=None, min_length=2, max_length=150)
+    phone_number: Optional[str] = Field(default=None, min_length=10, max_length=20)
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class AvatarUpdate(BaseModel):
+    image: str = Field(min_length=20, max_length=300_000)

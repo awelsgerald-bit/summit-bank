@@ -18,9 +18,13 @@ import {
   CreditCard,
   ShieldAlert,
   Landmark,
+  Settings as SettingsIcon,
+  FileText,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import MoreMenuSheet from '../components/MoreMenuSheet';
+import Avatar from '../components/Avatar';
+import ThemeToggle from '../components/ThemeToggle';
 
 const primaryNav = [
   { to: '/dashboard', label: 'Home', icon: Home },
@@ -39,6 +43,8 @@ const moreNav = [
   { to: '/cards', label: 'Cards', icon: CreditCard },
   { to: '/kyc', label: 'Verify Identity', icon: ShieldAlert },
   { to: '/bank-account', label: 'Bank Account', icon: Landmark },
+  { to: '/statements', label: 'Statements', icon: FileText },
+  { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
 
 export default function AppLayout() {
@@ -51,10 +57,6 @@ export default function AppLayout() {
     navigate('/login');
   }
 
-  const initials = user?.full_name
-    ? user.full_name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
-    : '';
-
   function navLinkClass({ isActive }) {
     return `flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm transition ${
       isActive ? 'panel text-[var(--text-1)]' : 'text-[var(--text-2)] hover:text-[var(--text-1)]'
@@ -63,7 +65,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen flex">
-      <aside className="hidden lg:flex flex-col w-64 shrink-0 p-6 gap-1 sticky top-0 h-screen overflow-y-auto">
+      <aside className="no-print hidden lg:flex flex-col w-64 shrink-0 p-6 gap-1 sticky top-0 h-screen overflow-y-auto">
         <div className="flex items-center gap-2.5 mb-10 px-2">
           <div className="w-8 h-8 rounded-lg grad-primary flex items-center justify-center">
             <Anchor size={16} strokeWidth={1.7} />
@@ -112,16 +114,17 @@ export default function AppLayout() {
       <div className="flex-1 min-w-0 flex justify-center px-4 sm:px-6 py-6">
         <div className="w-full max-w-6xl">
           <div className="panel rounded-[32px] shadow-2xl overflow-hidden">
-            <header className="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-white/5">
+            <header className="no-print flex items-center justify-between px-6 sm:px-8 py-5 border-b border-white/5">
               <div className="flex items-center gap-3">
                 <Menu size={18} className="text-[var(--text-2)] lg:hidden" />
                 <span className="hidden lg:block font-display text-sm text-[var(--text-3)]">Dashboard</span>
               </div>
               <div className="flex items-center gap-4">
+                <ThemeToggle />
                 <Bell size={18} className="text-[var(--text-2)]" />
-                <div className="w-8 h-8 rounded-full grad-primary flex items-center justify-center text-xs font-semibold text-[#1B0E3A]">
-                  {initials}
-                </div>
+                <NavLink to="/profile" aria-label="Profile">
+                  <Avatar user={user} size={32} />
+                </NavLink>
               </div>
             </header>
 
@@ -132,7 +135,7 @@ export default function AppLayout() {
         </div>
       </div>
 
-      <nav className="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-3.5 flex gap-7 items-center z-20 shadow-2xl">
+      <nav className="no-print lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-3.5 flex gap-7 items-center z-20 shadow-2xl">
         {primaryNav.map((item) => (
           <NavLink
             key={item.to}

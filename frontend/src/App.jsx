@@ -21,6 +21,9 @@ import Kyc from './pages/Kyc';
 import PaymentCallback from './pages/PaymentCallback';
 import BtcWallet from './pages/BtcWallet';
 import BankAccount from './pages/BankAccount';
+import Settings from './pages/Settings';
+import Statements from './pages/Statements';
+import Receipt from './pages/Receipt';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -55,6 +58,9 @@ function App() {
           <Route path="/kyc" element={<Kyc />} />
           <Route path="/btc-wallet" element={<BtcWallet />} />
           <Route path="/bank-account" element={<BankAccount />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/statements" element={<Statements />} />
+          <Route path="/receipt/:id" element={<Receipt />} />
         </Route>
 
         <Route element={<AdminRoute />}>
