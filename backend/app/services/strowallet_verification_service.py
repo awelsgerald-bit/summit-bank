@@ -59,9 +59,9 @@ def interpret_verify_reply(
     """
     Returns (confirmed, reason). Confirmed only for HTTP 200 + a JSON object that carries no
     failure signal and no contradicting amount or session id. StroWallet's documented failure
-    is HTTP 400 {"message": "Transaction not received.", "status": 400}; its success format is
-    not documented, so anything we do not positively recognise as success is refused, and the
-    raw reply is stored so the format can be learned and the rule tightened.
+    is HTTP 400 {"message": "Transaction not received.", "status": 400}; its confirmed success
+    reply is {"message": "Transaction received.", "status": 200}. Only that is accepted; any
+    other reply is refused and stored so it can be inspected.
     """
     if http_status != 200:
         return False, f"StroWallet answered HTTP {http_status}"
@@ -106,6 +106,15 @@ def interpret_verify_reply(
                     return False, f"Verify reply has an unreadable {key}"
                 if value not in expected_amounts:
                     return False, f"Verify reply {key} does not match the webhook"
+
+    # Positive proof required. StroWallet support confirmed (ticket #1808, 19 Oct 2026) that a
+    # valid sessionID returns exactly {"message": "Transaction received.", "status": 200}.
+    # Anything else, including an empty object, is refused.
+    message = data.get("message")
+    status_ok = data.get("status") == 200 and not isinstance(data.get("status"), bool)
+    message_ok = isinstance(message, str) and message.strip().rstrip(".").lower() == "transaction received"
+    if not (status_ok and message_ok):
+        return False, "Verify reply was HTTP 200 but is not StroWallet's 'Transaction received' confirmation"
 
     return True, "StroWallet confirmed the transfer"
 

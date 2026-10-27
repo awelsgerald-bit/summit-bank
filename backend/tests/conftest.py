@@ -39,7 +39,7 @@ if not settings.database_url.startswith("sqlite"):
     raise RuntimeError("Refusing to run tests: DATABASE_URL is not the throw-away SQLite file.")
 
 NOT_RECEIVED = '{"message":"Transaction not received.","status":400}'
-VERIFIED_OK = '{"status":200,"message":"Transaction verified"}'
+VERIFIED_OK = '{"message":"Transaction received.","status":200}'
 WEBHOOK_TOKEN = settings.strowallet_webhook_secret
 PASSWORD = "a-long-test-password-123"
 
