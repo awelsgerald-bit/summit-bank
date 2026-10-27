@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_transaction_pin
 from app.models.user import User
 from app.schemas.fixed_deposit import FixedDepositCreate, FixedDepositResponse
 from app.services import fixed_deposit_service
@@ -18,7 +18,7 @@ def get_term_options():
 @router.post("", response_model=FixedDepositResponse, status_code=status.HTTP_201_CREATED)
 def open_fixed_deposit(
     payload: FixedDepositCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_transaction_pin),
     db: Session = Depends(get_db),
 ):
     return fixed_deposit_service.create_fixed_deposit(db, current_user, payload.principal_amount, payload.term_days)

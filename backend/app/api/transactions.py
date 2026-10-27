@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_transaction_pin
 from app.models.user import User
 from app.schemas.transaction import (
     DepositRequest,
@@ -28,7 +28,7 @@ def deposit(
 @router.post("/withdraw", response_model=TransactionResponse, status_code=201)
 def withdraw(
     payload: WithdrawRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_transaction_pin),
     db: Session = Depends(get_db),
 ):
     return transaction_service.withdraw(db, current_user, payload.amount, payload.description)
@@ -37,7 +37,7 @@ def withdraw(
 @router.post("/transfer", response_model=TransactionResponse, status_code=201)
 def transfer(
     payload: TransferRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_transaction_pin),
     db: Session = Depends(get_db),
 ):
     return transaction_service.transfer(

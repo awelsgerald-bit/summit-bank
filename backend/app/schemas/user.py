@@ -28,6 +28,7 @@ class UserResponse(BaseModel):
     kyc_status: str
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
+    has_pin: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -49,3 +50,9 @@ class PasswordChange(BaseModel):
 
 class AvatarUpdate(BaseModel):
     image: str = Field(min_length=20, max_length=300_000)
+
+
+
+class PinSet(BaseModel):
+    password: str = Field(min_length=1, max_length=128)  # the account password, to prove it is you
+    new_pin: str = Field(pattern=r"^\d{4,6}$")

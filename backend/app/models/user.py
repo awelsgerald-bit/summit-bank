@@ -26,6 +26,9 @@ class User(Base):
     wallet_applications = relationship("WalletApplication", back_populates="user")
     strowallet_account = relationship("StroWalletAccount", back_populates="user", uselist=False)
     phone_number = Column(String(20), nullable=True)
+    transaction_pin_hash = Column(String(255), nullable=True)  # bcrypt hash of the 4-6 digit PIN
+    pin_failed_attempts = Column(Integer, nullable=False, default=0, server_default="0")
+    pin_locked_until = Column(DateTime(timezone=True), nullable=True)
     avatar = Column(Text, nullable=True)  # small profile picture as a data URL (<= 200 KB)
     
     sent_transactions = relationship(
@@ -34,4 +37,7 @@ class User(Base):
     received_transactions = relationship(
         "Transaction", foreign_keys="Transaction.receiver_id", back_populates="receiver"
     )
-  
+
+    @property
+    def has_pin(self) -> bool:
+        return self.transaction_pin_hash is not None

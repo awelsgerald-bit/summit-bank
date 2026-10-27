@@ -26,6 +26,7 @@ import Statements from './pages/Statements';
 import Receipt from './pages/Receipt';
 import SavedPayments from './pages/SavedPayments';
 import Contact from './pages/Contact';
+import Save4Me from './pages/Save4Me';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -66,6 +67,7 @@ function App() {
           <Route path="/receipt/:id" element={<Receipt />} />
           <Route path="/saved-payments" element={<SavedPayments />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/save4me" element={<Save4Me />} />
         </Route>
 
         <Route element={<AdminRoute />}>

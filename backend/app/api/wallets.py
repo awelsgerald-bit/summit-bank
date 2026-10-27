@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_transaction_pin
 from app.models.user import User
 from app.schemas.wallet import (
     WalletApplicationCreate, WalletApplicationResponse, WalletResponse,
@@ -52,7 +52,7 @@ def deposit_btc(
 @router.post("/BTC/withdraw", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 def withdraw_btc(
     amount_btc: Decimal,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_transaction_pin),
     db: Session = Depends(get_db),
 ):
     return wallet_transaction_service.withdraw_btc(db, current_user, amount_btc, None)
@@ -62,7 +62,7 @@ def withdraw_btc(
 def transfer_btc(
     recipient_account_number: str,
     amount_btc: Decimal,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_transaction_pin),
     db: Session = Depends(get_db),
 ):
     return wallet_transaction_service.transfer_btc(db, current_user, recipient_account_number, amount_btc, None)
