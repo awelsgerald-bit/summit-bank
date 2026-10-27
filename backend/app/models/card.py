@@ -1,7 +1,7 @@
 import random
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, false
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -20,6 +20,7 @@ class CardApplication(Base):
     expiry_month = Column(Integer, nullable=True)
     expiry_year = Column(Integer, nullable=True)
     cvv = Column(String(4), nullable=True)
+    is_frozen = Column(Boolean, nullable=False, default=False, server_default=false())  # owner can freeze/unfreeze
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     approved_at = Column(DateTime(timezone=True), nullable=True)

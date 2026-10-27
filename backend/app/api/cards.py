@@ -25,3 +25,21 @@ def get_my_cards(
     db: Session = Depends(get_db),
 ):
     return card_service.list_my_cards(db, current_user)
+
+
+@router.post("/{application_id}/freeze", response_model=CardApplicationResponse)
+def freeze_card(
+    application_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return card_service.set_frozen(db, current_user, application_id, True)
+
+
+@router.post("/{application_id}/unfreeze", response_model=CardApplicationResponse)
+def unfreeze_card(
+    application_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return card_service.set_frozen(db, current_user, application_id, False)

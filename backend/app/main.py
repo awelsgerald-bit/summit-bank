@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc, payments, strowallet, admin_strowallet, statements
+from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc, payments, strowallet, admin_strowallet, statements, saved_payments, support
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.database import Base, engine
@@ -33,6 +33,8 @@ app.include_router(payments.router)
 app.include_router(strowallet.router)
 app.include_router(admin_strowallet.router)
 app.include_router(statements.router)
+app.include_router(saved_payments.router)
+app.include_router(support.router)
 
 @app.get("/health")
 def health_check():

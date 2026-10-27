@@ -24,6 +24,8 @@ import BankAccount from './pages/BankAccount';
 import Settings from './pages/Settings';
 import Statements from './pages/Statements';
 import Receipt from './pages/Receipt';
+import SavedPayments from './pages/SavedPayments';
+import Contact from './pages/Contact';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -34,6 +36,7 @@ import AdminCards from './pages/admin/AdminCards';
 import AdminKyc from './pages/admin/AdminKyc';
 import AdminFlagged from './pages/admin/AdminFlagged';
 import AdminWalletApplications from './pages/admin/AdminWalletApplications';
+import AdminSupport from './pages/admin/AdminSupport';
 
 function App() {
   return (
@@ -61,6 +64,8 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/statements" element={<Statements />} />
           <Route path="/receipt/:id" element={<Receipt />} />
+          <Route path="/saved-payments" element={<SavedPayments />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
 
         <Route element={<AdminRoute />}>
@@ -75,6 +80,7 @@ function App() {
             <Route path="/admin/kyc" element={<AdminKyc />} />
             <Route path="/admin/flagged" element={<AdminFlagged />} />
             <Route path="/admin/wallet-applications" element={<AdminWalletApplications />} />
+            <Route path="/admin/support" element={<AdminSupport />} />
           </Route>
         </Route>
       </Route>

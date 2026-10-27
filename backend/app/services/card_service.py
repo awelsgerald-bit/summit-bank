@@ -85,3 +85,20 @@ def reject_card(db: Session, application_id: int) -> CardApplication:
     db.commit()
     db.refresh(application)
     return application
+
+
+def set_frozen(db: Session, user, application_id: int, frozen: bool) -> CardApplication:
+    card = (
+        db.query(CardApplication)
+        .filter(CardApplication.id == application_id, CardApplication.user_id == user.id)
+        .first()
+    )
+    # Someone else's card looks exactly like one that does not exist.
+    if card is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found")
+    if card.status != "approved":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Only an active card can be frozen")
+    card.is_frozen = frozen
+    db.commit()
+    db.refresh(card)
+    return card

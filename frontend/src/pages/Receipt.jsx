@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Printer, Share2 } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, Printer, Repeat, Share2 } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../api/client';
 import { errorMessage, formatDateTime, formatMoney } from '../utils/errors';
 
@@ -17,6 +17,7 @@ function Line({ label, value, mono }) {
 
 export default function Receipt() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
@@ -127,6 +128,24 @@ export default function Receipt() {
           <Share2 size={16} /> Share
         </button>
       </div>
+      {receipt.type === 'transfer' && receipt.direction === 'debit' && receipt.other_party && receipt.currency === 'NGN' && (
+        <button
+          onClick={() =>
+            navigate('/transfer', {
+              state: {
+                prefill: {
+                  account: receipt.other_party.account_number,
+                  amount: Number(receipt.amount),
+                  description: receipt.description,
+                },
+              },
+            })
+          }
+          className="no-print ghost-btn w-full rounded-full py-3 text-sm flex items-center justify-center gap-2"
+        >
+          <Repeat size={16} /> Repeat this payment
+        </button>
+      )}
       {note && <p className="no-print text-xs text-[var(--success)] text-center">{note}</p>}
       <p className="no-print text-xs text-[var(--text-3)] text-center">
         For a PDF, choose "Save as PDF" as the printer in the window that opens.

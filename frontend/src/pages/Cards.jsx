@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { CreditCard, Clock, XCircle, Eye, EyeOff } from 'lucide-react';
+import { CreditCard, Clock, XCircle, Eye, EyeOff, Snowflake } from 'lucide-react';
 import api from '../api/client';
+import { errorMessage } from '../utils/errors';
 
 const statusMeta = {
   pending: { label: 'Under Review', icon: Clock, tint: '#FBBF24', bg: 'rgba(251,191,36,0.15)' },
@@ -8,11 +9,12 @@ const statusMeta = {
   rejected: { label: 'Rejected', icon: XCircle, tint: '#FB7185', bg: 'rgba(251,113,133,0.15)' },
 };
 
-function ApprovedCardFace({ card }) {
+function ApprovedCardFace({ card, onToggleFreeze, busy }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="relative card-glow">
+    <div className="space-y-3">
+    <div className={`relative card-glow transition ${card.is_frozen ? 'opacity-60 grayscale' : ''}`}>
       <div
         className="rounded-[24px] p-6 relative overflow-hidden shadow-2xl"
         style={{
@@ -22,8 +24,13 @@ function ApprovedCardFace({ card }) {
       >
         <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-white/5 blur-2xl" />
         <div className="relative flex items-center justify-between mb-8">
-          <span className="text-[10px] uppercase tracking-wider text-white/50 capitalize">
+          <span className="text-[10px] uppercase tracking-wider text-white/50 capitalize flex items-center gap-1.5">
             {card.card_type} Card
+            {card.is_frozen && (
+              <span className="inline-flex items-center gap-1 normal-case text-sky-300">
+                <Snowflake size={11} /> Frozen
+              </span>
+            )}
           </span>
           <button onClick={() => setRevealed((r) => !r)} className="text-white/60 hover:text-white">
             {revealed ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -46,6 +53,15 @@ function ApprovedCardFace({ card }) {
         </div>
       </div>
     </div>
+    <button
+      onClick={() => onToggleFreeze(card)}
+      disabled={busy}
+      className="ghost-btn w-full rounded-2xl py-2.5 text-xs flex items-center justify-center gap-2 disabled:opacity-60"
+    >
+      <Snowflake size={14} />
+      {busy ? 'Please wait...' : card.is_frozen ? 'Unfreeze card' : 'Freeze card'}
+    </button>
+    </div>
   );
 }
 
@@ -54,6 +70,7 @@ export default function Cards() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [applying, setApplying] = useState(false);
+  const [freezingId, setFreezingId] = useState(null);
 
   async function load() {
     try {
@@ -75,9 +92,22 @@ export default function Cards() {
       const res = await api.post('/cards/apply', { card_type: cardType });
       setCards((prev) => [res.data, ...prev]);
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not submit application.');
+      setError(errorMessage(err, 'Could not submit application.'));
     } finally {
       setApplying(false);
+    }
+  }
+
+  async function toggleFreeze(card) {
+    setError('');
+    setFreezingId(card.id);
+    try {
+      const res = await api.post(`/cards/${card.id}/${card.is_frozen ? 'unfreeze' : 'freeze'}`);
+      setCards((prev) => prev.map((c) => (c.id === card.id ? res.data : c)));
+    } catch (err) {
+      setError(errorMessage(err, 'Could not update this card.'));
+    } finally {
+      setFreezingId(null);
     }
   }
 
@@ -122,7 +152,7 @@ export default function Cards() {
           )}
           {cards.map((card) => {
             if (card.status === 'approved') {
-              return <ApprovedCardFace key={card.id} card={card} />;
+              return <ApprovedCardFace key={card.id} card={card} onToggleFreeze={toggleFreeze} busy={freezingId === card.id} />;
             }
             const meta = statusMeta[card.status];
             const Icon = meta.icon;
