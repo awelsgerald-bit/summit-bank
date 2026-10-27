@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -26,6 +26,7 @@ class User(Base):
     wallet_applications = relationship("WalletApplication", back_populates="user")
     strowallet_account = relationship("StroWalletAccount", back_populates="user", uselist=False)
     phone_number = Column(String(20), nullable=True)
+    avatar = Column(Text, nullable=True)  # small profile picture as a data URL (<= 200 KB)
     
     sent_transactions = relationship(
         "Transaction", foreign_keys="Transaction.sender_id", back_populates="sender"

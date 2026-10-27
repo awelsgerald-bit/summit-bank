@@ -1,5 +1,6 @@
-import { LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { LogOut, Settings } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import Avatar from '../components/Avatar';
 import { useAuth } from '../context/AuthContext';
 
 function formatDate(iso) {
@@ -25,16 +26,10 @@ export default function Profile() {
     navigate('/login');
   }
 
-  const initials = user?.full_name
-    ? user.full_name.split(' ').map((p) => p[0]).slice(0, 2).join('').toUpperCase()
-    : '';
-
   return (
     <div className="max-w-lg mx-auto space-y-5 stagger">
       <div className="glass rounded-3xl p-8 text-center">
-        <div className="w-16 h-16 rounded-full grad-primary flex items-center justify-center mx-auto mb-4 font-display text-xl font-semibold">
-          {initials}
-        </div>
+        <Avatar user={user} size={72} className="mx-auto mb-4" />
         <h3 className="font-display text-lg font-medium">{user?.full_name}</h3>
         <p className="text-sm text-[var(--text-3)]">{user?.email}</p>
       </div>
@@ -44,6 +39,14 @@ export default function Profile() {
         <Row label="Date joined" value={formatDate(user?.created_at)} />
         <Row label="Account status" value="Active" />
       </div>
+
+      <Link
+        to="/settings"
+        className="w-full rounded-full py-3 text-sm font-medium border border-white/10 text-[var(--text-1)] hover:bg-white/5 flex items-center justify-center gap-2 transition"
+      >
+        <Settings size={16} />
+        Settings
+      </Link>
 
       <button
         onClick={handleLogout}

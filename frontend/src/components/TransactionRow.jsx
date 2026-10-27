@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, Clock, X } from 'lucide-react';
 
 function formatMoney(n) {
@@ -65,7 +66,11 @@ export default function TransactionRow({ tx, currentUserId }) {
   const isSettled = tx.status === 'approved';
 
   return (
-    <div className={`hover-lift glass rounded-2xl p-3.5 flex items-center justify-between gap-4 ${!isSettled ? 'opacity-70' : ''}`}>
+    <Link
+      to={`/receipt/${tx.id}`}
+      title="View receipt"
+      className={`hover-lift glass rounded-2xl p-3.5 flex items-center justify-between gap-4 ${!isSettled ? 'opacity-70' : ''}`}
+    >
       <div className="flex items-center gap-3 min-w-0">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
@@ -87,6 +92,6 @@ export default function TransactionRow({ tx, currentUserId }) {
         </p>
         <p className="text-[11px] text-[var(--text-3)]">{formatDate(tx.timestamp)}</p>
       </div>
-    </div>
+    </Link>
   );
 }
