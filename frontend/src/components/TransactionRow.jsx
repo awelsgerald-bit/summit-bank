@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, Clock, X } from 'lucide-react';
 
 function formatMoney(n) {
-  return '₦' + n.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '₦' + Number(n).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function formatDate(iso) {

@@ -198,3 +198,42 @@ body {
   * { animation: none !important; }
   tr { break-inside: avoid; }
 }
+
+/* Mobile menu drawer */
+@keyframes slideInLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+.slide-in-left { animation: slideInLeft 0.22s ease-out; border-radius: 0 28px 28px 0; }
+
+/* Landing page */
+@keyframes floaty { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-12px) rotate(-4deg); } }
+@keyframes floaty2 { 0%, 100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(10px) rotate(5deg); } }
+.float-a { animation: floaty 7s ease-in-out infinite; }
+.float-b { animation: floaty2 8s ease-in-out infinite; }
+.landing-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 80% 0%, rgba(124, 58, 237, 0.35), transparent 70%),
+    radial-gradient(45% 40% at 0% 30%, rgba(192, 132, 252, 0.18), transparent 70%);
+}
+:root[data-theme='light'] .landing-glow {
+  background:
+    radial-gradient(60% 50% at 80% 0%, rgba(124, 58, 237, 0.18), transparent 70%),
+    radial-gradient(45% 40% at 0% 30%, rgba(192, 132, 252, 0.16), transparent 70%);
+}
+@media (prefers-reduced-motion: reduce) { .float-a, .float-b, .slide-in-left { animation: none; } }
+
+/* ---- Polish: focus, motion, touch ---- */
+html { scroll-behavior: smooth; }
+::selection { background: rgba(167, 139, 250, 0.4); }
+:focus-visible { outline: 2px solid var(--pink-accent); outline-offset: 2px; border-radius: 8px; }
+button, a, select, input { -webkit-tap-highlight-color: transparent; }
+button, .btn-primary, .ghost-btn { touch-action: manipulation; }
+.btn-primary { box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35); }
+.btn-primary:disabled { box-shadow: none; }
+.glass.hover-lift:active, .panel.hover-lift:active { transform: scale(0.99); }
+@media (hover: none) { .hover-lift:hover { transform: none; } }
+select.input-field, select { color-scheme: dark; }
+:root[data-theme='light'] select { color-scheme: light; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

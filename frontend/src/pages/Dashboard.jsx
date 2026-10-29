@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, History as HistoryIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -8,6 +9,13 @@ import QuickAction from '../components/QuickAction';
 import TransactionRow from '../components/TransactionRow';
 
 const POLL_INTERVAL_MS = 12000;
+
+function greeting() {
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Africa/Lagos' }).format(new Date()));
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
 
 export default function Dashboard() {
   const { user, refreshProfile } = useAuth();
@@ -62,6 +70,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-7 stagger">
+      <div>
+        <p className="text-xs text-[var(--text-3)]">{greeting()}</p>
+        <h2 className="font-display text-xl font-semibold tracking-tight">{user.full_name?.split(' ')[0]}</h2>
+      </div>
       <WalletCarousel
         usd={{
           accountNumber: user.account_number,
@@ -81,9 +93,9 @@ export default function Dashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display text-base font-medium">Recent activity</h3>
-          <a href="/history" className="text-xs" style={{ color: 'var(--pink-accent)' }}>
+          <Link to="/history" className="text-xs hover:underline" style={{ color: 'var(--pink-accent)' }}>
             View all
-          </a>
+          </Link>
         </div>
         <div className="space-y-3">
           {loading && <p className="text-sm text-[var(--text-3)]">Loading...</p>}
