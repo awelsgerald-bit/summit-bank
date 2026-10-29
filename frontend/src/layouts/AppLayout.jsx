@@ -77,7 +77,7 @@ export default function AppLayout() {
 
   function navLinkClass({ isActive }) {
     return `flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm transition ${
-      isActive ? 'panel text-[var(--text-1)]' : 'text-[var(--text-2)] hover:text-[var(--text-1)]'
+      isActive ? 'bg-[#1c1530] text-white' : 'text-[var(--text-2)] hover:text-white hover:bg-white/5'
     }`;
   }
 
@@ -85,12 +85,10 @@ export default function AppLayout() {
     <div className="min-h-screen flex">
       <aside className="no-print hidden lg:flex flex-col w-64 shrink-0 p-6 gap-1 sticky top-0 h-screen overflow-y-auto">
         <div className="flex items-center gap-2.5 mb-10 px-2">
-          <div className="w-8 h-8 rounded-lg grad-primary flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg grad-primary flex items-center justify-center text-white">
             <Anchor size={16} strokeWidth={1.7} />
           </div>
-          <span className="font-display text-[15px] tracking-tight">
-            Summit <span className="grad-text font-semibold">Bank</span>
-          </span>
+          <span className="font-display text-[15px] font-semibold tracking-tight">Summit Bank</span>
         </div>
 
         {primaryNav.map((item) => (
@@ -100,7 +98,7 @@ export default function AppLayout() {
           </NavLink>
         ))}
 
-        <p className="text-[10px] uppercase tracking-wider text-[var(--text-3)] px-4 mt-6 mb-1">More</p>
+        <p className="text-xs text-[var(--text-3)] px-4 mt-6 mb-1">More</p>
         {moreNav.map((item) => (
           <NavLink key={item.to} to={item.to} className={navLinkClass}>
             <item.icon size={18} strokeWidth={1.7} />
@@ -129,39 +127,39 @@ export default function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex-1 min-w-0 flex justify-center px-4 sm:px-6 py-6">
-        <div className="w-full max-w-6xl">
-          <div className="panel rounded-[32px] shadow-2xl overflow-hidden">
-            <header className="no-print sticky top-0 z-30 flex items-center justify-between px-5 sm:px-8 py-4 border-b border-white/5 backdrop-blur-xl bg-[var(--panel)]/80">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setMoreOpen(true)}
-                  aria-label="Open menu"
-                  className="text-[var(--text-2)] lg:hidden -ml-1 p-1"
-                >
-                  <Menu size={22} strokeWidth={1.8} />
-                </button>
-                <span className="hidden lg:block font-display text-sm text-[var(--text-3)]">Dashboard</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <ThemeToggle />
-                <Bell size={18} className="text-[var(--text-2)]" />
-                <NavLink to="/profile" aria-label="Profile">
-                  <Avatar user={user} size={32} />
-                </NavLink>
-              </div>
-            </header>
-
-            <main className="px-5 sm:px-8 py-6 sm:py-8 pb-36 lg:pb-10">
-              <Outlet />
-            </main>
+      <div className="flex-1 min-w-0 flex flex-col lg:pr-6 lg:py-6">
+        <header className="no-print flex items-center justify-between px-5 sm:px-8 lg:px-2 pt-5 pb-4 lg:pt-0">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMoreOpen(true)}
+              aria-label="Open menu"
+              className="lg:hidden -ml-2 w-11 h-11 flex items-center justify-center text-[var(--text-1)] rounded-full hover:bg-white/5"
+            >
+              <Menu size={22} strokeWidth={1.8} />
+            </button>
+            <span className="hidden lg:block font-display text-sm text-[var(--text-3)]">Welcome back</span>
           </div>
-        </div>
+          <span className="lg:hidden font-display text-base font-semibold">Summit Bank</span>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Bell size={18} className="hidden sm:block text-[var(--text-2)]" />
+            <NavLink to="/profile" aria-label="Profile">
+              <Avatar user={user} size={36} />
+            </NavLink>
+          </div>
+        </header>
+
+        <main className="sheet flex-1 rounded-t-[36px] lg:rounded-[32px] px-5 sm:px-8 pt-3 pb-36 lg:pt-8 lg:pb-10 shadow-2xl">
+          <div className="w-10 h-1 rounded-full bg-[#c9c3d6] mx-auto mb-5 lg:hidden" aria-hidden="true" />
+          <div className="max-w-5xl mx-auto">
+            <Outlet />
+          </div>
+        </main>
       </div>
 
       <nav
         aria-label="Quick navigation"
-        className="no-print lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 glass rounded-full px-2.5 py-2 flex items-center gap-1 shadow-2xl w-[min(92vw,380px)] justify-between"
+        className="no-print lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 rounded-full px-2.5 py-2 flex items-center justify-between shadow-2xl w-[min(92vw,380px)] bg-[#14101f] border border-[#2a2240]"
       >
         {bottomNav.map((item) =>
           item.center ? (
@@ -169,7 +167,7 @@ export default function AppLayout() {
               key={item.to}
               to={item.to}
               aria-label={item.label}
-              className="-mt-7 w-14 h-14 rounded-full grad-primary text-white flex items-center justify-center shadow-xl ring-4 ring-[var(--panel)] transition active:scale-95"
+              className="-mt-7 w-14 h-14 rounded-full bg-[var(--rose)] text-[#1a1426] flex items-center justify-center shadow-xl transition active:scale-95"
             >
               <item.icon size={24} strokeWidth={1.8} />
             </NavLink>
@@ -179,13 +177,12 @@ export default function AppLayout() {
               to={item.to}
               aria-label={item.label}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-0.5 w-14 h-12 rounded-full text-[10px] transition ${
-                  isActive ? 'text-[var(--text-1)] bg-[var(--glass)]' : 'text-[var(--text-3)]'
+                `w-12 h-12 rounded-full flex items-center justify-center transition ${
+                  isActive ? 'text-white bg-[#2a2240]' : 'text-[#9a92b3] hover:text-white'
                 }`
               }
             >
-              <item.icon size={19} strokeWidth={1.8} />
-              {item.label}
+              <item.icon size={21} strokeWidth={1.8} />
             </NavLink>
           )
         )}

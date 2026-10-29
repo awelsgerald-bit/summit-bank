@@ -1,4 +1,5 @@
 import { CreditCard, Eye, EyeOff } from 'lucide-react';
+import Blobs from './Blobs';
 import { useState } from 'react';
 import useCountUp from '../hooks/useCountUp';
 
@@ -29,11 +30,11 @@ export default function BankCard({ accountNumber, cardHolder, balance, createdAt
       <div
         className="rounded-[28px] p-6 sm:p-7 relative overflow-hidden shadow-2xl"
         style={{
-          background: 'linear-gradient(135deg,#3B1F78 0%, #2A1458 55%, #1B0E3A 100%)',
+          background: '#14101F',
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
-        <div className="absolute -right-14 -top-14 w-56 h-56 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+        <Blobs name="card" />
 
         <div className="relative flex items-start justify-between mb-6">
           <div>
@@ -50,8 +51,8 @@ export default function BankCard({ accountNumber, cardHolder, balance, createdAt
             </div>
           </div>
           <div className="flex items-center">
-            <div className="w-6 h-6 rounded-full" style={{ background: '#F5D742', opacity: 0.9 }} />
-            <div className="w-6 h-6 rounded-full -ml-3" style={{ background: '#FB923C', opacity: 0.9 }} />
+            <div className="w-6 h-6 rounded-full" style={{ background: '#E2C8A4', opacity: 0.95 }} />
+            <div className="w-6 h-6 rounded-full -ml-3" style={{ background: '#D88AA0', opacity: 0.95 }} />
           </div>
         </div>
 
