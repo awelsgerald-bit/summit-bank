@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime, Text
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -29,6 +29,8 @@ class User(Base):
     transaction_pin_hash = Column(String(255), nullable=True)  # bcrypt hash of the 4-6 digit PIN
     pin_failed_attempts = Column(Integer, nullable=False, default=0, server_default="0")
     pin_locked_until = Column(DateTime(timezone=True), nullable=True)
+    referral_code = Column(String(12), unique=True, index=True, nullable=True)  # made on first use
+    referred_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     avatar = Column(Text, nullable=True)  # small profile picture as a data URL (<= 200 KB)
     
     sent_transactions = relationship(

@@ -26,7 +26,14 @@ def create_user(db: Session, user_data: UserRegister) -> User:
             detail="Email already registered",
         )
 
+    referrer_id = None
+    if user_data.referral_code and user_data.referral_code.strip():
+        from app.services import referral_service  # imported here: referral_service imports other services
+
+        referrer_id = referral_service.find_referrer(db, user_data.referral_code).id  # 400 if it does not exist
+
     user = User(
+        referred_by_user_id=referrer_id,
         full_name=user_data.full_name,
         email=user_data.email,
         hashed_password=hash_password(user_data.password),

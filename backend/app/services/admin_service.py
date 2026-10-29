@@ -5,7 +5,11 @@ from app.models.strowallet_webhook_event import StroWalletWebhookEvent
 from app.models.transaction import Transaction, TransactionType
 from app.models.user import User
 from app.models.wallet import Wallet
+import logging
+
 from app.services import ledger_service
+
+logger = logging.getLogger("summit_bank.admin")
 
 def list_pending_transactions(db: Session) -> list[Transaction]:
     return (
@@ -43,6 +47,16 @@ def approve_transaction(db: Session, transaction_id: int) -> Transaction:
     tx.status = "approved"
     db.commit()
     db.refresh(tx)
+
+    # Referral bonuses. Separate step, after the approval is safely saved: if it fails the
+    # approval stands and nothing is lost (the bonus can simply be created later).
+    try:
+        from app.services import referral_service
+
+        referral_service.on_deposit_approved(db, tx)
+    except Exception:
+        db.rollback()
+        logger.exception("Referral bonus step failed for transaction %s", transaction_id)
     return tx
 
 

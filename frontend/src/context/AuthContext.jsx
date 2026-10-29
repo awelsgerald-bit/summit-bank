@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
     await fetchProfile();
   }
 
-  async function register(full_name, email, password, phone_number) {
-    await api.post('/auth/register', { full_name, email, password, phone_number });
+  async function register(full_name, email, password, phone_number, referral_code) {
+    await api.post('/auth/register', { full_name, email, password, phone_number, referral_code: referral_code || undefined });
     await login(email, password);
   }
 
