@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { Landmark, Copy, Check, Clock, ShieldAlert, Info, RefreshCw } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { errorMessage } from '../utils/errors';
 
 const PHONE_RE = /^(0\d{10}|\+234\d{10})$/;
 const STALE_PENDING_MS = 2 * 60 * 1000;
 
 function errorText(err, fallback) {
-  const detail = err?.response?.data?.detail;
-  if (typeof detail === 'string' && detail) return detail;
-  return fallback;
+  return errorMessage(err, fallback);
 }
 
 function CopyButton({ value, label }) {

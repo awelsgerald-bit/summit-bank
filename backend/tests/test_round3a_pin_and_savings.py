@@ -29,7 +29,8 @@ def transfer(client, headers, to_account, amount="10.00"):
 
 
 def detail(response):
-    return response.json()["detail"]
+    body = response.json()
+    return body.get("message") or body.get("detail")  # this app's error handler uses "message"
 
 
 # ------------------------------------------------------------------ PIN setup
@@ -214,6 +215,20 @@ def test_bad_amounts_are_refused(client):
         r = client.post(f"/savings/pots/{pot_id}/deposit", headers=headers, json={"amount": amount})
         assert r.status_code == 422, (amount, r.status_code)
     assert balance(user_id) == Decimal("100.00") and pot_total() == Decimal("0")
+
+
+def test_a_zero_or_negative_amount_anywhere_is_a_clean_422_not_a_crash(client):
+    """Regression: the validation error handler used to crash (HTTP 500) on amounts like 0
+    because the error contained a Decimal limit."""
+    make_user(balance="100.00")
+    other = make_user(email="bola@example.com")
+    headers = login(client)
+    for amount in ("0", "-1"):
+        r = client.post("/transactions/transfer", headers=headers,
+                        json={"recipient_account_number": account_of(other), "amount": amount})
+        assert r.status_code == 422, (amount, r.status_code)
+        assert r.json()["message"] == "Validation failed"
+    assert tx_count() == 0
 
 
 def test_money_in_a_pot_cannot_be_sent_as_a_transfer(client):

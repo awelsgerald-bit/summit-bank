@@ -23,7 +23,12 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "error": True,
                 "message": "Validation failed",
                 "status_code": 422,
-                "details": exc.errors(),
+                # Only plain, JSON-safe fields: the raw errors can contain Decimal limits and
+                # exception objects, which crashed this handler (a 500 instead of a clean 422).
+                "details": [
+                    {"type": str(e.get("type", "")), "loc": [str(p) for p in e.get("loc", ())], "msg": str(e.get("msg", ""))}
+                    for e in exc.errors()
+                ],
             },
         )
 

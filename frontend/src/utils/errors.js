@@ -11,8 +11,8 @@ function friendlyDetail(detail) {
 
 export function errorMessage(err, fallback) {
   const data = err?.response?.data;
+  if (typeof data?.message === 'string') return friendlyDetail(data.message);
   if (typeof data?.detail === 'string') return friendlyDetail(data.detail);
-  if (typeof data?.message === 'string') return data.message;
   return fallback;
 }
 

@@ -12,9 +12,11 @@ export function registerPinAsker(fn) {
   pinAsker = fn;
 }
 
+// This API sends the error text as "message" (some FastAPI paths use "detail"); accept both.
 function detailOf(error) {
-  const detail = error?.response?.data?.detail;
-  return typeof detail === 'string' ? detail : '';
+  const data = error?.response?.data;
+  if (typeof data?.message === 'string') return data.message;
+  return typeof data?.detail === 'string' ? data.detail : '';
 }
 
 // Sends the same request again with the PIN attached. A wrong PIN asks again (the server counts
