@@ -46,6 +46,14 @@ export default function Transfer() {
       return;
     }
 
+    const plain = String(decodedText || '').trim();
+    if (/^\d{10}$/.test(plain)) {
+      setRecipientAccount(plain);
+      setScannedName('');
+      setError('');
+      return;
+    }
+
     try {
       const data = JSON.parse(decodedText);
 
