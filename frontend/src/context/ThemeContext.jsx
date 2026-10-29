@@ -10,7 +10,7 @@ function readTheme() {
   } catch {
     // storage can be blocked; fall through to the default
   }
-  return 'dark';
+  return 'light';
 }
 
 export function ThemeProvider({ children }) {

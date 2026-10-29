@@ -1,56 +1,53 @@
+import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Anchor, ChevronRight, LogOut, ShieldCheck, X } from 'lucide-react';
+import { ChevronRight, LogOut, ShieldCheck, X } from 'lucide-react';
+import Blobs from './Blobs';
 
-// The mobile menu: a drawer that slides in from the left, one tidy list row per page.
+// The phone menu: a full-screen dark page with one tidy list on a white card.
 export default function MoreMenuSheet({ items, onClose, isAdmin, onLogout }) {
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [onClose]);
+
+  const row = 'flex items-center gap-3.5 px-5 min-h-[48px] text-sm font-medium border-b border-[#e6e1f0] last:border-0 transition active:bg-[#ece8f4]';
+
   return (
-    <div className="no-print fixed inset-0 z-50 flex bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <aside
-        className="panel h-full w-[82%] max-w-xs flex flex-col slide-in-left shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-        aria-label="Menu"
-      >
-        <div className="flex items-center justify-between px-5 py-5 border-b border-white/5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg grad-primary flex items-center justify-center">
-              <Anchor size={16} strokeWidth={1.7} />
-            </div>
-            <span className="font-display text-[15px] tracking-tight">
-              Summit <span className="grad-text font-semibold">Bank</span>
-            </span>
-          </div>
-          <button onClick={onClose} className="text-[var(--text-2)]" aria-label="Close menu">
+    <div className="no-print fixed inset-0 z-50 bg-[var(--ink)] overflow-y-auto fade-in" role="dialog" aria-modal="true" aria-label="Menu">
+      <Blobs name="corner" opacity={0.5} className="fixed" />
+      <div className="relative max-w-md mx-auto px-4 pb-28">
+        <div className="flex items-center justify-between px-2 pt-5 pb-4">
+          <span className="font-display text-2xl font-bold">Menu</span>
+          <button onClick={onClose} aria-label="Close menu" className="w-11 h-11 rounded-full bg-[var(--ink-3)] flex items-center justify-center">
             <X size={20} />
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-2">
+        <nav aria-label="Menu" className="light-zone rounded-[28px] py-1.5 shadow-2xl">
           {items.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3.5 px-5 py-3.5 text-sm border-b border-white/5 transition ${
-                  isActive ? 'text-[var(--text-1)] bg-[var(--glass)]' : 'text-[var(--text-2)]'
-                }`
-              }
+              className={({ isActive }) => `${row} ${isActive ? 'text-[var(--text-1)] bg-[#ece8f4]' : 'text-[var(--text-1)]'}`}
             >
-              <span className="w-8 h-8 rounded-lg grad-primary flex items-center justify-center shrink-0 text-white">
-                <item.icon size={15} strokeWidth={1.8} />
+              <span className="w-8 h-8 rounded-[10px] bg-[#e8e2f5] text-[#3b2a66] flex items-center justify-center shrink-0">
+                <item.icon size={16} strokeWidth={1.9} />
               </span>
               <span className="flex-1">{item.label}</span>
               <ChevronRight size={16} className="text-[var(--text-3)]" />
             </NavLink>
           ))}
           {isAdmin && (
-            <NavLink
-              to="/admin/users"
-              onClick={onClose}
-              className="flex items-center gap-3.5 px-5 py-3.5 text-sm text-[var(--pink-accent)] border-b border-white/5"
-            >
-              <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 glass">
-                <ShieldCheck size={15} strokeWidth={1.8} />
+            <NavLink to="/admin/users" onClick={onClose} className={`${row} text-[#5b3fa8]`}>
+              <span className="w-8 h-8 rounded-[10px] bg-[#e8e2f5] flex items-center justify-center shrink-0">
+                <ShieldCheck size={16} strokeWidth={1.9} />
               </span>
               <span className="flex-1">Admin console</span>
               <ChevronRight size={16} />
@@ -63,11 +60,11 @@ export default function MoreMenuSheet({ items, onClose, isAdmin, onLogout }) {
             onClose();
             onLogout?.();
           }}
-          className="flex items-center gap-3.5 px-5 py-4 text-sm text-[var(--text-2)] border-t border-white/5"
+          className="mt-4 w-full h-[52px] rounded-full bg-[var(--ink-3)] text-sm font-medium flex items-center justify-center gap-2.5"
         >
-          <LogOut size={18} strokeWidth={1.7} /> Log out
+          <LogOut size={18} strokeWidth={1.8} /> Log out
         </button>
-      </aside>
+      </div>
     </div>
   );
 }

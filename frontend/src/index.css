@@ -2,18 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------------------
+   Summit design language: an ink-dark canvas with soft organic shapes, and a "sheet" that
+   rises over it. Everything outside a .sheet is dark. Inside a .sheet the variables below
+   are swapped (light theme: a white sheet; dark theme: a dark sheet), so pages follow
+   without changes. .light-zone is a sheet that stays light in both themes.
+   --------------------------------------------------------------------------------------- */
 :root {
+  --ink: #0e0b14;
+  --ink-2: #14101f;
+  --ink-3: #1c1530;
+  --plum: #4a3680;
+  --lilac: #b3a5e3;
+  --sand: #e2c8a4;
+  --rose: #d88aa0;
+
   --violet-deep: #1b0e3a;
-  --violet-mid: #4c1d95;
-  --violet-bright: #7c3aed;
-  --pink-accent: #c084fc;
-  --panel: #120e1e;
-  --panel-2: #17122a;
+  --violet-mid: #4a3680;
+  --violet-bright: #7c5cd6;
+  --pink-accent: #c9b8f5;
+  --panel: #14101f;
+  --panel-2: #1c1530;
   --glass: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.1);
-  --text-1: #f5f3ff;
-  --text-2: #b8afd9;
-  --text-3: #7c7396;
+  --text-1: #f3f0f9;
+  --text-2: #b8b0cf;
+  --text-3: #8a829e;
   --success: #34d399;
   --danger: #fb7185;
 }
@@ -26,9 +40,10 @@ body {
   font-family: 'Inter', sans-serif;
   color: var(--text-1);
   -webkit-font-smoothing: antialiased;
-  background: radial-gradient(1200px 700px at 20% -10%, #8b5cf6 0%, rgba(139, 92, 246, 0) 55%),
-    radial-gradient(900px 600px at 100% 0%, #6d28d9 0%, rgba(109, 40, 217, 0) 50%),
-    linear-gradient(160deg, #2e1065 0%, #1b0e3a 55%, #120a2a 100%);
+  background:
+    radial-gradient(700px 480px at 100% -5%, rgba(216, 138, 160, 0.16) 0%, rgba(216, 138, 160, 0) 70%),
+    radial-gradient(800px 600px at 0% 100%, rgba(74, 54, 128, 0.35) 0%, rgba(74, 54, 128, 0) 70%),
+    var(--ink);
   background-attachment: fixed;
 }
 
@@ -45,12 +60,19 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* The sheet that rises over the dark canvas. */
+.sheet {
+  background: #120e1e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-1);
+}
+
 .grad-primary {
-  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 55%, #5b21b6 100%);
+  background: linear-gradient(135deg, #8b6fdc 0%, #6a4fc0 55%, #4a3680 100%);
 }
 
 .grad-text {
-  background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%);
+  background: linear-gradient(135deg, #f3f0f9 0%, #c9b8f5 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -60,11 +82,11 @@ body {
 .card-glow::after {
   content: '';
   position: absolute;
-  inset: -30px;
+  inset: -24px;
   z-index: -1;
   border-radius: 32px;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.45), transparent 70%);
-  filter: blur(40px);
+  background: radial-gradient(circle, rgba(179, 165, 227, 0.28), transparent 70%);
+  filter: blur(36px);
 }
 
 .hover-lift {
@@ -72,17 +94,18 @@ body {
 }
 .hover-lift:hover {
   transform: translateY(-3px);
-  border-color: rgba(196, 181, 253, 0.35);
+  border-color: rgba(201, 184, 245, 0.35);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
-  color: #1b0e3a;
-  transition: filter 0.2s ease, transform 0.15s ease;
+  background: var(--rose);
+  color: #1a1426;
+  transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 26px rgba(216, 138, 160, 0.28);
 }
-.btn-primary:hover { filter: brightness(1.1); }
+.btn-primary:hover { filter: brightness(1.07); }
 .btn-primary:active { transform: scale(0.98); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
 .input-field {
   background: rgba(255, 255, 255, 0.04);
@@ -90,8 +113,8 @@ body {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 .input-field:focus-within {
-  border-color: #a78bfa;
-  background: rgba(167, 139, 250, 0.08);
+  border-color: var(--lilac);
+  background: rgba(179, 165, 227, 0.08);
 }
 
 .toggle-pill {
@@ -99,7 +122,7 @@ body {
   border: 1px solid var(--glass-border);
 }
 .toggle-active {
-  background: linear-gradient(135deg, #f5f3ff, #e9d5ff);
+  background: linear-gradient(135deg, #f3f0f9, #dcd2f7);
   color: #1b0e3a;
 }
 
@@ -148,41 +171,44 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
 
 /* ---------------------------------------------------------------------------------------
-   Light theme. The default look above is the dark theme; <html data-theme="light"> swaps the
-   same variables, so every page follows without changes.
+   Light sheet: the light theme's sheet, and any .light-zone (stays light in dark theme too).
    --------------------------------------------------------------------------------------- */
-:root[data-theme='light'] {
+:is(:root[data-theme='light'] .sheet, .light-zone) {
   --panel: #ffffff;
-  --panel-2: #f7f5ff;
-  --glass: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(76, 29, 149, 0.14);
-  --text-1: #1b0e3a;
+  --panel-2: #f7f5fb;
+  --glass: rgba(255, 255, 255, 0.9);
+  --glass-border: #e6e1f0;
+  --text-1: #1a1426;
   --text-2: #4b4470;
-  --text-3: #6f6890;
-  --success: #059669;
-  --danger: #e11d48;
+  --text-3: #6b6480;
+  --pink-accent: #5b3fa8;
+  --success: #1e7a55;
+  --danger: #d6264f;
+  background: #f5f3f8;
+  border-color: transparent;
+  color: var(--text-1);
 }
-:root[data-theme='light'] body {
-  background: radial-gradient(1200px 700px at 20% -10%, #ddd6fe 0%, rgba(221, 214, 254, 0) 55%),
-    radial-gradient(900px 600px at 100% 0%, #ede9fe 0%, rgba(237, 233, 254, 0) 50%),
-    linear-gradient(160deg, #f5f3ff 0%, #ede9fe 55%, #e9e4fb 100%);
-  background-attachment: fixed;
+:is(:root[data-theme='light'] .sheet, .light-zone) .panel {
+  background: #ffffff;
+  border-color: #e6e1f0;
+  box-shadow: 0 8px 28px rgba(26, 20, 38, 0.06);
 }
-:root[data-theme='light'] .panel { border-color: rgba(76, 29, 149, 0.1); box-shadow: 0 20px 50px rgba(76, 29, 149, 0.1); }
-:root[data-theme='light'] .glass { backdrop-filter: blur(12px); }
-:root[data-theme='light'] .toggle-pill { background: rgba(76, 29, 149, 0.05); }
-:root[data-theme='light'] .toggle-active { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; }
-:root[data-theme='light'] .input-field { background: rgba(76, 29, 149, 0.04); }
-:root[data-theme='light'] .input-field:focus-within { background: rgba(124, 58, 237, 0.08); }
-:root[data-theme='light'] .btn-primary { color: #fff; }
-:root[data-theme='light'] .grad-text { background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%); -webkit-background-clip: text; background-clip: text; }
-:root[data-theme='light'] .hover-lift:hover { border-color: rgba(124, 58, 237, 0.35); }
-:root[data-theme='light'] ::-webkit-scrollbar-thumb { background: rgba(76, 29, 149, 0.2); }
-/* white hairlines used for dividers and borders are invisible on a light page */
-:root[data-theme='light'] .border-white\/5,
-:root[data-theme='light'] .border-white\/10,
-:root[data-theme='light'] .divide-white\/5 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(76, 29, 149, 0.12); }
-:root[data-theme='light'] .hover\:bg-white\/5:hover { background: rgba(76, 29, 149, 0.06); }
+:is(:root[data-theme='light'] .sheet, .light-zone) .glass { backdrop-filter: none; box-shadow: 0 4px 18px rgba(26, 20, 38, 0.04); }
+:is(:root[data-theme='light'] .sheet, .light-zone) .toggle-pill { background: rgba(74, 54, 128, 0.06); }
+:is(:root[data-theme='light'] .sheet, .light-zone) .toggle-active { background: #1c1530; color: #fff; }
+:is(:root[data-theme='light'] .sheet, .light-zone) .input-field { background: #ffffff; }
+:is(:root[data-theme='light'] .sheet, .light-zone) .input-field:focus-within { background: #ffffff; border-color: #6a4fc0; }
+:is(:root[data-theme='light'] .sheet, .light-zone) .grad-text { background: linear-gradient(135deg, #4a3680 0%, #6a4fc0 100%); -webkit-background-clip: text; background-clip: text; }
+:is(:root[data-theme='light'] .sheet, .light-zone) .hover-lift:hover { border-color: rgba(106, 79, 192, 0.4); }
+:is(:root[data-theme='light'] .sheet, .light-zone) ::-webkit-scrollbar-thumb { background: rgba(74, 54, 128, 0.2); }
+:is(:root[data-theme='light'] .sheet, .light-zone) .ghost-btn:hover { background: rgba(74, 54, 128, 0.05); }
+/* white hairlines and washes used on the dark canvas are invisible on a light sheet */
+:is(:root[data-theme='light'] .sheet, .light-zone) .border-white\/5,
+:is(:root[data-theme='light'] .sheet, .light-zone) .border-white\/10,
+:is(:root[data-theme='light'] .sheet, .light-zone) .divide-white\/5 > :not([hidden]) ~ :not([hidden]) { border-color: #e6e1f0; }
+:is(:root[data-theme='light'] .sheet, .light-zone) .bg-white\/5 { background: rgba(74, 54, 128, 0.05); }
+:is(:root[data-theme='light'] .sheet, .light-zone) .bg-white\/10 { background: rgba(74, 54, 128, 0.09); }
+:is(:root[data-theme='light'] .sheet, .light-zone) .hover\:bg-white\/5:hover { background: rgba(74, 54, 128, 0.06); }
 
 /* ---------------------------------------------------------------------------------------
    Printing (statements and receipts: "Save as PDF"). Menus disappear; the page turns into
@@ -192,7 +218,7 @@ body {
   .no-print { display: none !important; }
   html, body { background: #fff !important; color: #111 !important; }
   body { background-image: none !important; }
-  .panel, .glass { background: #fff !important; border: 1px solid #ddd !important; box-shadow: none !important; backdrop-filter: none !important; border-radius: 12px !important; }
+  .panel, .glass, .sheet { background: #fff !important; border: 1px solid #ddd !important; box-shadow: none !important; backdrop-filter: none !important; border-radius: 12px !important; }
   .print-area, .print-area * { color: #111 !important; }
   main { padding: 0 !important; }
   * { animation: none !important; }
@@ -208,22 +234,11 @@ body {
 @keyframes floaty2 { 0%, 100% { transform: translateY(0) rotate(5deg); } 50% { transform: translateY(10px) rotate(5deg); } }
 .float-a { animation: floaty 7s ease-in-out infinite; }
 .float-b { animation: floaty2 8s ease-in-out infinite; }
-.landing-glow {
-  position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 80% 0%, rgba(124, 58, 237, 0.35), transparent 70%),
-    radial-gradient(45% 40% at 0% 30%, rgba(192, 132, 252, 0.18), transparent 70%);
-}
-:root[data-theme='light'] .landing-glow {
-  background:
-    radial-gradient(60% 50% at 80% 0%, rgba(124, 58, 237, 0.18), transparent 70%),
-    radial-gradient(45% 40% at 0% 30%, rgba(192, 132, 252, 0.16), transparent 70%);
-}
 @media (prefers-reduced-motion: reduce) { .float-a, .float-b, .slide-in-left { animation: none; } }
 
 /* ---- Polish: focus, motion, touch ---- */
 html { scroll-behavior: smooth; }
-::selection { background: rgba(167, 139, 250, 0.4); }
+::selection { background: rgba(179, 165, 227, 0.4); }
 :focus-visible { outline: 2px solid var(--pink-accent); outline-offset: 2px; border-radius: 8px; }
 button, a, select, input { -webkit-tap-highlight-color: transparent; }
 button, .btn-primary, .ghost-btn { touch-action: manipulation; }
@@ -232,7 +247,7 @@ button, .btn-primary, .ghost-btn { touch-action: manipulation; }
 .glass.hover-lift:active, .panel.hover-lift:active { transform: scale(0.99); }
 @media (hover: none) { .hover-lift:hover { transform: none; } }
 select.input-field, select { color-scheme: dark; }
-:root[data-theme='light'] select { color-scheme: light; }
+:is(:root[data-theme='light'] .sheet, .light-zone) select { color-scheme: light; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

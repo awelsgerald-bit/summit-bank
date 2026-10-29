@@ -73,7 +73,7 @@ export default function AdminLayout() {
 
       <div className="flex-1 min-w-0 flex justify-center px-4 sm:px-6 py-6">
         <div className="w-full max-w-6xl">
-          <div className="panel rounded-[32px] shadow-2xl overflow-hidden">
+          <div className="sheet rounded-[32px] shadow-2xl overflow-hidden">
             <header className="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-white/5">
               <span className="font-display text-sm text-[var(--text-3)]">Admin console</span>
               <div className="w-8 h-8 rounded-full grad-primary flex items-center justify-center text-xs font-semibold text-[#1B0E3A]">

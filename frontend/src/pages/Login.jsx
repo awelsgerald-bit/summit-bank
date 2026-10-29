@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Anchor, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Blobs from '../components/Blobs';
 
 export default function Login() {
   const { login } = useAuth();
@@ -28,6 +29,7 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-5 py-10">
+      <Blobs name="corner" opacity={0.7} className="fixed" />
       <div className="relative w-full max-w-md fade-in">
         <div className="flex items-center gap-3 justify-center mb-8">
           <div className="w-10 h-10 rounded-xl grad-primary flex items-center justify-center">
@@ -38,7 +40,7 @@ export default function Login() {
           </span>
         </div>
 
-        <div className="panel rounded-3xl p-8 sm:p-10 shadow-2xl">
+        <div className="sheet rounded-3xl p-8 sm:p-10 shadow-2xl">
           <h1 className="font-display text-2xl font-semibold mb-1">Welcome back</h1>
           <p className="text-sm text-[var(--text-2)] mb-8">Sign in to manage your account.</p>
 
