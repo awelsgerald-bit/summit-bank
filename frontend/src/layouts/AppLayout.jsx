@@ -22,6 +22,7 @@ import {
   FileText,
   Bookmark,
   LifeBuoy,
+  Coins,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import MoreMenuSheet from '../components/MoreMenuSheet';
@@ -41,6 +42,7 @@ const moreNav = [
   { to: '/receive', label: 'Receive', icon: QrCode },
   { to: '/beneficiaries', label: 'Beneficiaries', icon: Users },
   { to: '/loans', label: 'Loans', icon: HandCoins },
+  { to: '/save4me', label: 'Save4Me', icon: Coins },
   { to: '/fixed-deposits', label: 'Fixed Deposits', icon: PiggyBank },
   { to: '/cards', label: 'Cards', icon: CreditCard },
   { to: '/kyc', label: 'Verify Identity', icon: ShieldAlert },

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Camera, Moon, Sun, Trash2 } from 'lucide-react';
+import { Camera, Lock, Moon, Sun, Trash2 } from 'lucide-react';
 import api from '../api/client';
 import Avatar from '../components/Avatar';
 import { useAuth } from '../context/AuthContext';
@@ -67,6 +67,12 @@ export default function Settings() {
   const [again, setAgain] = useState('');
   const [pwNote, setPwNote] = useState(null);
   const [savingPw, setSavingPw] = useState(false);
+
+  const [pinPassword, setPinPassword] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [pinAgain, setPinAgain] = useState('');
+  const [pinNote, setPinNote] = useState(null);
+  const [savingPin, setSavingPin] = useState(false);
 
   async function saveProfile(e) {
     e.preventDefault();
@@ -141,6 +147,32 @@ export default function Settings() {
       setPwNote({ type: 'error', text: errorMessage(err, 'Could not change your password.') });
     } finally {
       setSavingPw(false);
+    }
+  }
+
+  async function savePin(e) {
+    e.preventDefault();
+    setPinNote(null);
+    if (!/^\d{4,6}$/.test(newPin)) {
+      setPinNote({ type: 'error', text: 'The PIN must be 4 to 6 digits.' });
+      return;
+    }
+    if (newPin !== pinAgain) {
+      setPinNote({ type: 'error', text: 'The two PINs do not match.' });
+      return;
+    }
+    setSavingPin(true);
+    try {
+      await api.post('/account/pin', { password: pinPassword, new_pin: newPin });
+      await refreshProfile();
+      setPinPassword('');
+      setNewPin('');
+      setPinAgain('');
+      setPinNote({ type: 'ok', text: user?.has_pin ? 'PIN changed.' : 'PIN set. You will be asked for it when you move money.' });
+    } catch (err) {
+      setPinNote({ type: 'error', text: errorMessage(err, 'Could not save your PIN.') });
+    } finally {
+      setSavingPin(false);
     }
   }
 
@@ -226,6 +258,40 @@ export default function Settings() {
         <Message note={profileNote} />
         <button disabled={savingProfile} className="btn-primary rounded-full px-5 py-2.5 text-sm font-medium">
           {savingProfile ? 'Saving...' : 'Save changes'}
+        </button>
+      </form>
+
+      <form onSubmit={savePin} className="glass rounded-3xl p-6 space-y-4">
+        <h3 className="font-display text-sm text-[var(--text-2)] flex items-center gap-2">
+          <Lock size={14} /> Transaction PIN
+        </h3>
+        <p className="text-xs text-[var(--text-3)]">
+          {user?.has_pin
+            ? 'Your PIN is set. You are asked for it when you send money, withdraw, or use Save4Me. Enter a new one below to change it.'
+            : 'Not set yet. A PIN protects your money even if someone gets into your login. 4 to 6 digits; 5 wrong tries lock it for 15 minutes.'}
+        </p>
+        {[
+          ['Account password', pinPassword, setPinPassword, 'current-password', 'password', undefined],
+          [user?.has_pin ? 'New PIN' : 'PIN', newPin, setNewPin, 'off', 'password', 6],
+          ['Repeat PIN', pinAgain, setPinAgain, 'off', 'password', 6],
+        ].map(([label, value, setter, auto, type, max]) => (
+          <label key={label} className="block text-xs text-[var(--text-3)]">
+            {label}
+            <input
+              type={type}
+              inputMode={max ? 'numeric' : undefined}
+              maxLength={max}
+              value={value}
+              onChange={(e) => setter(max ? e.target.value.replace(/\D/g, '') : e.target.value)}
+              autoComplete={auto}
+              required
+              className="input-field rounded-xl px-4 py-3 w-full mt-1 text-sm text-[var(--text-1)] bg-transparent outline-none"
+            />
+          </label>
+        ))}
+        <Message note={pinNote} />
+        <button disabled={savingPin} className="btn-primary rounded-full px-5 py-2.5 text-sm font-medium">
+          {savingPin ? 'Saving...' : user?.has_pin ? 'Change PIN' : 'Set PIN'}
         </button>
       </form>
 

@@ -10,8 +10,8 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.round2 import LookupResponse
-from app.schemas.user import AvatarUpdate, PasswordChange, ProfileUpdate, UserResponse
-from app.services import fixed_deposit_service, lookup_service
+from app.schemas.user import AvatarUpdate, PasswordChange, PinSet, ProfileUpdate, UserResponse
+from app.services import fixed_deposit_service, lookup_service, pin_service
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
@@ -120,3 +120,16 @@ def lookup_account(
 ):
     """Shows who owns an account number (name partly hidden) before money is sent to it."""
     return lookup_service.lookup_account(db, current_user, account_number)
+
+
+@router.post("/pin", response_model=UserResponse)
+def set_transaction_pin(
+    payload: PinSet,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Sets or changes the transaction PIN. Needs the account password, so a stolen login
+    session alone cannot change the PIN."""
+    pin_service.set_pin(db, current_user, payload.password, payload.new_pin)
+    db.refresh(current_user)
+    return current_user

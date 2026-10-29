@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_transaction_pin
 from app.models.user import User
 from app.schemas.round2 import SavedPaymentCreate, SavedPaymentResponse
 from app.schemas.transaction import TransactionResponse
@@ -45,7 +45,7 @@ def create_saved_payment(
 @router.post("/{saved_id}/pay", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 def pay_saved_payment(
     saved_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_transaction_pin),
     db: Session = Depends(get_db),
 ):
     return saved_payment_service.pay_saved(db, current_user, saved_id)

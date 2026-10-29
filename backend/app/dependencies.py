@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -39,4 +39,40 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
         )
+    return current_user
+
+
+def require_transaction_pin(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> User:
+    """Use on actions that move money. A user who has set a PIN must send it in the
+    X-Transaction-Pin header; a user who has not set one yet is let through (so nobody is locked
+    out the day this ships), and the website nudges them to set one."""
+    from app.services import pin_service
+
+    if current_user.transaction_pin_hash is None:
+        return current_user
+    pin = request.headers.get("X-Transaction-Pin")
+    if not pin:
+        raise HTTPException(status_code=status.HTTP_428_PRECONDITION_REQUIRED, detail="PIN_REQUIRED")
+    pin_service.check_pin(db, current_user, pin)
+    return current_user
+
+
+def require_pin_set_and_valid(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> User:
+    """Stricter: for brand-new money features, a PIN must exist and be correct."""
+    from app.services import pin_service
+
+    if current_user.transaction_pin_hash is None:
+        raise HTTPException(status_code=status.HTTP_428_PRECONDITION_REQUIRED, detail="PIN_NOT_SET")
+    pin = request.headers.get("X-Transaction-Pin")
+    if not pin:
+        raise HTTPException(status_code=status.HTTP_428_PRECONDITION_REQUIRED, detail="PIN_REQUIRED")
+    pin_service.check_pin(db, current_user, pin)
     return current_user

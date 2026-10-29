@@ -1,8 +1,18 @@
 // The API may answer with { detail: "..." } or { message: "..." }; show whichever it sent.
+// The server answers PIN problems with short codes; turn them into sentences.
+function friendlyDetail(detail) {
+  const [code, extra] = detail.split('|');
+  if (code === 'PIN_REQUIRED') return 'Enter your transaction PIN to continue.';
+  if (code === 'PIN_NOT_SET') return 'Set a transaction PIN in Settings first.';
+  if (code === 'PIN_INVALID') return `Incorrect PIN. ${extra} ${extra === '1' ? 'try' : 'tries'} left.`;
+  if (code === 'PIN_LOCKED') return `Too many wrong PIN tries. Try again in about ${extra} minutes.`;
+  return detail;
+}
+
 export function errorMessage(err, fallback) {
   const data = err?.response?.data;
-  if (typeof data?.detail === 'string') return data.detail;
-  if (typeof data?.message === 'string') return data.message;
+  if (typeof data?.message === 'string') return friendlyDetail(data.message);
+  if (typeof data?.detail === 'string') return friendlyDetail(data.detail);
   return fallback;
 }
 
