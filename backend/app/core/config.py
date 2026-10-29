@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,4 +22,10 @@ class Settings(BaseSettings):
     strowallet_provider: str = "sterling"  # "sterling" (tested) or "fidelity" (untested) - never Nombank
     strowallet_live_enabled: bool = False  # second switch: must ALSO be true before STROWALLET_MODE=live does anything
     strowallet_verify_amount: str = "transaction"  # amount sent to StroWallet's verify call: "transaction" (gross) or "settled" (net). Not confirmed by StroWallet; change it here, not in code.
+    # Round 3B
+    scheduler_enabled: bool = True  # run due scheduled transfers every minute while the server is awake
+    cron_token: str = ""  # secret for POST /internal/run-schedules (an outside timer can wake the server); empty = endpoint off
+    referral_bonus_amount: Decimal = Decimal("500")  # paid to EACH side (still needs admin approval)
+    referral_min_first_deposit: Decimal = Decimal("5000")  # the new user's approved deposit must be at least this
+    referral_max_rewards_per_user: int = 20
 settings = Settings()

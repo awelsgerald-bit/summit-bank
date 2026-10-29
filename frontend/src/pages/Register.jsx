@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Anchor, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const [referral, setReferral] = useState((params.get('ref') || '').trim().toUpperCase());
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,7 +38,7 @@ export default function Register() {
 
     setSubmitting(true);
     try {
-      await register(fullName, email, password, cleanPhone);
+      await register(fullName, email, password, cleanPhone, referral.trim());
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Could not create your account.');
@@ -132,6 +134,18 @@ export default function Register() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat password"
                   className="bg-transparent w-full text-sm outline-none placeholder:text-[var(--text-3)]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-[var(--text-2)] mb-1.5 block">Referral code (optional)</label>
+              <div className="input-field rounded-xl px-4 py-3">
+                <input
+                  value={referral}
+                  onChange={(e) => setReferral(e.target.value.toUpperCase())}
+                  maxLength={12}
+                  placeholder="SB123ABC"
+                  className="bg-transparent w-full text-sm font-mono outline-none placeholder:text-[var(--text-3)]"
                 />
               </div>
             </div>

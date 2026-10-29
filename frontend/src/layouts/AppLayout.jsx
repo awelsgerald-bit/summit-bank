@@ -23,6 +23,8 @@ import {
   Bookmark,
   LifeBuoy,
   Coins,
+  CalendarClock,
+  Gift,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import MoreMenuSheet from '../components/MoreMenuSheet';
@@ -48,6 +50,8 @@ const moreNav = [
   { to: '/kyc', label: 'Verify Identity', icon: ShieldAlert },
   { to: '/bank-account', label: 'Bank Account', icon: Landmark },
   { to: '/saved-payments', label: 'Saved Payments', icon: Bookmark },
+  { to: '/scheduled', label: 'Scheduled', icon: CalendarClock },
+  { to: '/referrals', label: 'Refer & Earn', icon: Gift },
   { to: '/statements', label: 'Statements', icon: FileText },
   { to: '/contact', label: 'Contact us', icon: LifeBuoy },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },

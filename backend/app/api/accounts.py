@@ -11,7 +11,7 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.round2 import LookupResponse
 from app.schemas.user import AvatarUpdate, PasswordChange, PinSet, ProfileUpdate, UserResponse
-from app.services import fixed_deposit_service, lookup_service, pin_service
+from app.services import fixed_deposit_service, lookup_service, pin_service, scheduled_transfer_service
 
 router = APIRouter(prefix="/account", tags=["Account"])
 
@@ -31,6 +31,10 @@ def get_profile(
     db: Session = Depends(get_db),
 ):
     fixed_deposit_service.credit_matured_deposits(db, current_user)
+    try:  # opportunistic: run this user's due scheduled transfers whenever the app is opened
+        scheduled_transfer_service.run_due(db, user_id=current_user.id)
+    except Exception:
+        db.rollback()
     return current_user
 
 

@@ -27,6 +27,8 @@ import Receipt from './pages/Receipt';
 import SavedPayments from './pages/SavedPayments';
 import Contact from './pages/Contact';
 import Save4Me from './pages/Save4Me';
+import ScheduledTransfers from './pages/ScheduledTransfers';
+import Referrals from './pages/Referrals';
 
 import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -68,6 +70,8 @@ function App() {
           <Route path="/saved-payments" element={<SavedPayments />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/save4me" element={<Save4Me />} />
+          <Route path="/scheduled" element={<ScheduledTransfers />} />
+          <Route path="/referrals" element={<Referrals />} />
         </Route>
 
         <Route element={<AdminRoute />}>
