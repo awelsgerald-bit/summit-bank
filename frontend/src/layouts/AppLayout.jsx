@@ -14,7 +14,6 @@ import {
   QrCode,
   HandCoins,
   PiggyBank,
-  MoreHorizontal,
   CreditCard,
   ShieldAlert,
   Landmark,
@@ -36,6 +35,15 @@ const primaryNav = [
   { to: '/transfer', label: 'Send', icon: ArrowLeftRight },
   { to: '/history', label: 'Activity', icon: History },
   { to: '/profile', label: 'Profile', icon: User },
+];
+
+// The floating bar on phones: Home, Send, the QR code in the middle, Activity and Settings.
+const bottomNav = [
+  { to: '/dashboard', label: 'Home', icon: Home },
+  { to: '/transfer', label: 'Send', icon: ArrowLeftRight },
+  { to: '/receive', label: 'QR code', icon: QrCode, center: true },
+  { to: '/history', label: 'Activity', icon: History },
+  { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
 
 // Anything added here automatically shows up in the desktop "More" section
@@ -124,9 +132,15 @@ export default function AppLayout() {
       <div className="flex-1 min-w-0 flex justify-center px-4 sm:px-6 py-6">
         <div className="w-full max-w-6xl">
           <div className="panel rounded-[32px] shadow-2xl overflow-hidden">
-            <header className="no-print flex items-center justify-between px-6 sm:px-8 py-5 border-b border-white/5">
+            <header className="no-print sticky top-0 z-30 flex items-center justify-between px-5 sm:px-8 py-4 border-b border-white/5 backdrop-blur-xl bg-[var(--panel)]/80">
               <div className="flex items-center gap-3">
-                <Menu size={18} className="text-[var(--text-2)] lg:hidden" />
+                <button
+                  onClick={() => setMoreOpen(true)}
+                  aria-label="Open menu"
+                  className="text-[var(--text-2)] lg:hidden -ml-1 p-1"
+                >
+                  <Menu size={22} strokeWidth={1.8} />
+                </button>
                 <span className="hidden lg:block font-display text-sm text-[var(--text-3)]">Dashboard</span>
               </div>
               <div className="flex items-center gap-4">
@@ -138,29 +152,53 @@ export default function AppLayout() {
               </div>
             </header>
 
-            <main className="px-5 sm:px-8 py-6 sm:py-8 pb-32 lg:pb-10">
+            <main className="px-5 sm:px-8 py-6 sm:py-8 pb-36 lg:pb-10">
               <Outlet />
             </main>
           </div>
         </div>
       </div>
 
-      <nav className="no-print lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 glass rounded-full px-6 py-3.5 flex gap-7 items-center z-20 shadow-2xl">
-        {primaryNav.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) => (isActive ? 'text-[#F5F3FF]' : 'text-[#7C7396]')}
-          >
-            <item.icon size={20} strokeWidth={1.7} />
-          </NavLink>
-        ))}
-        <button onClick={() => setMoreOpen(true)} className="text-[#7C7396]">
-          <MoreHorizontal size={20} strokeWidth={1.7} />
-        </button>
+      <nav
+        aria-label="Quick navigation"
+        className="no-print lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 glass rounded-full px-2.5 py-2 flex items-center gap-1 shadow-2xl w-[min(92vw,380px)] justify-between"
+      >
+        {bottomNav.map((item) =>
+          item.center ? (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              aria-label={item.label}
+              className="-mt-7 w-14 h-14 rounded-full grad-primary text-white flex items-center justify-center shadow-xl ring-4 ring-[var(--panel)] transition active:scale-95"
+            >
+              <item.icon size={24} strokeWidth={1.8} />
+            </NavLink>
+          ) : (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              aria-label={item.label}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center gap-0.5 w-14 h-12 rounded-full text-[10px] transition ${
+                  isActive ? 'text-[var(--text-1)] bg-[var(--glass)]' : 'text-[var(--text-3)]'
+                }`
+              }
+            >
+              <item.icon size={19} strokeWidth={1.8} />
+              {item.label}
+            </NavLink>
+          )
+        )}
       </nav>
 
-      {moreOpen && <MoreMenuSheet items={moreNav} onClose={() => setMoreOpen(false)} />}
+      {moreOpen && (
+        <MoreMenuSheet
+          items={moreNav}
+          isAdmin={user?.role === 'admin'}
+          onLogout={handleLogout}
+          onClose={() => setMoreOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import AdminRoute from './components/AdminRoute';
 import AppLayout from './layouts/AppLayout';
 import AdminLayout from './layouts/AdminLayout';
 
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -44,6 +45,7 @@ import AdminSupport from './pages/admin/AdminSupport';
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/payment-callback" element={<PaymentCallback />} />
