@@ -169,11 +169,11 @@ body {
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
-
 /* ---------------------------------------------------------------------------------------
    Light sheet: the light theme's sheet, and any .light-zone (stays light in dark theme too).
    --------------------------------------------------------------------------------------- */
-:is(:root[data-theme='light'] .sheet, .light-zone) {
+:root[data-theme='light'] .sheet,
+.light-zone {
   --panel: #ffffff;
   --panel-2: #f7f5fb;
   --glass: rgba(255, 255, 255, 0.9);
@@ -188,27 +188,44 @@ body {
   border-color: transparent;
   color: var(--text-1);
 }
-:is(:root[data-theme='light'] .sheet, .light-zone) .panel {
+:root[data-theme='light'] .sheet .panel,
+.light-zone .panel {
   background: #ffffff;
   border-color: #e6e1f0;
   box-shadow: 0 8px 28px rgba(26, 20, 38, 0.06);
 }
-:is(:root[data-theme='light'] .sheet, .light-zone) .glass { backdrop-filter: none; box-shadow: 0 4px 18px rgba(26, 20, 38, 0.04); }
-:is(:root[data-theme='light'] .sheet, .light-zone) .toggle-pill { background: rgba(74, 54, 128, 0.06); }
-:is(:root[data-theme='light'] .sheet, .light-zone) .toggle-active { background: #1c1530; color: #fff; }
-:is(:root[data-theme='light'] .sheet, .light-zone) .input-field { background: #ffffff; }
-:is(:root[data-theme='light'] .sheet, .light-zone) .input-field:focus-within { background: #ffffff; border-color: #6a4fc0; }
-:is(:root[data-theme='light'] .sheet, .light-zone) .grad-text { background: linear-gradient(135deg, #4a3680 0%, #6a4fc0 100%); -webkit-background-clip: text; background-clip: text; }
-:is(:root[data-theme='light'] .sheet, .light-zone) .hover-lift:hover { border-color: rgba(106, 79, 192, 0.4); }
-:is(:root[data-theme='light'] .sheet, .light-zone) ::-webkit-scrollbar-thumb { background: rgba(74, 54, 128, 0.2); }
-:is(:root[data-theme='light'] .sheet, .light-zone) .ghost-btn:hover { background: rgba(74, 54, 128, 0.05); }
+:root[data-theme='light'] .sheet .glass,
+.light-zone .glass { backdrop-filter: none; box-shadow: 0 4px 18px rgba(26, 20, 38, 0.04); }
+:root[data-theme='light'] .sheet .toggle-pill,
+.light-zone .toggle-pill { background: rgba(74, 54, 128, 0.06); }
+:root[data-theme='light'] .sheet .toggle-active,
+.light-zone .toggle-active { background: #1c1530; color: #fff; }
+:root[data-theme='light'] .sheet .input-field,
+.light-zone .input-field { background: #ffffff; }
+:root[data-theme='light'] .sheet .input-field:focus-within,
+.light-zone .input-field:focus-within { background: #ffffff; border-color: #6a4fc0; }
+:root[data-theme='light'] .sheet .grad-text,
+.light-zone .grad-text { background: linear-gradient(135deg, #4a3680 0%, #6a4fc0 100%); -webkit-background-clip: text; background-clip: text; }
+:root[data-theme='light'] .sheet .hover-lift:hover,
+.light-zone .hover-lift:hover { border-color: rgba(106, 79, 192, 0.4); }
+:root[data-theme='light'] .sheet ::-webkit-scrollbar-thumb,
+.light-zone ::-webkit-scrollbar-thumb { background: rgba(74, 54, 128, 0.2); }
+:root[data-theme='light'] .sheet .ghost-btn:hover,
+.light-zone .ghost-btn:hover { background: rgba(74, 54, 128, 0.05); }
 /* white hairlines and washes used on the dark canvas are invisible on a light sheet */
-:is(:root[data-theme='light'] .sheet, .light-zone) .border-white\/5,
-:is(:root[data-theme='light'] .sheet, .light-zone) .border-white\/10,
-:is(:root[data-theme='light'] .sheet, .light-zone) .divide-white\/5 > :not([hidden]) ~ :not([hidden]) { border-color: #e6e1f0; }
-:is(:root[data-theme='light'] .sheet, .light-zone) .bg-white\/5 { background: rgba(74, 54, 128, 0.05); }
-:is(:root[data-theme='light'] .sheet, .light-zone) .bg-white\/10 { background: rgba(74, 54, 128, 0.09); }
-:is(:root[data-theme='light'] .sheet, .light-zone) .hover\:bg-white\/5:hover { background: rgba(74, 54, 128, 0.06); }
+:root[data-theme='light'] .sheet .border-white\/5,
+/* white hairlines and washes used on the dark canvas are invisible on a light sheet */
+.light-zone .border-white\/5,
+:root[data-theme='light'] .sheet .border-white\/10,
+.light-zone .border-white\/10,
+:root[data-theme='light'] .sheet .divide-white\/5 > :not([hidden]) ~ :not([hidden]),
+.light-zone .divide-white\/5 > :not([hidden]) ~ :not([hidden]) { border-color: #e6e1f0; }
+:root[data-theme='light'] .sheet .bg-white\/5,
+.light-zone .bg-white\/5 { background: rgba(74, 54, 128, 0.05); }
+:root[data-theme='light'] .sheet .bg-white\/10,
+.light-zone .bg-white\/10 { background: rgba(74, 54, 128, 0.09); }
+:root[data-theme='light'] .sheet .hover\:bg-white\/5:hover,
+.light-zone .hover\:bg-white\/5:hover { background: rgba(74, 54, 128, 0.06); }
 
 /* ---------------------------------------------------------------------------------------
    Printing (statements and receipts: "Save as PDF"). Menus disappear; the page turns into
@@ -247,8 +264,60 @@ button, .btn-primary, .ghost-btn { touch-action: manipulation; }
 .glass.hover-lift:active, .panel.hover-lift:active { transform: scale(0.99); }
 @media (hover: none) { .hover-lift:hover { transform: none; } }
 select.input-field, select { color-scheme: dark; }
-:is(:root[data-theme='light'] .sheet, .light-zone) select { color-scheme: light; }
+:root[data-theme='light'] .sheet select,
+.light-zone select { color-scheme: light; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---- Landing page: light and airy by default, dark in dark theme ---- */
+.landing {
+  --lp-bg: #f7f5fb;
+  --lp-ink: #1a1426;
+  --lp-muted: #5f5878;
+  --lp-line: #e3deee;
+  --lp-band: #e9e3f7;
+  --lp-card: #ffffff;
+  background: var(--lp-bg);
+  color: var(--lp-ink);
+}
+:root[data-theme='dark'] .landing {
+  --lp-bg: #0e0b14;
+  --lp-ink: #f3f0f9;
+  --lp-muted: #a9a1bd;
+  --lp-line: #2a2240;
+  --lp-band: #1c1530;
+  --lp-card: #14101f;
+}
+
+/* Interactive card */
+.tilt-stage { touch-action: pan-y; cursor: pointer; }
+.tilt-pose { container-type: inline-size; transform: rotate(-11deg); }
+.tilt-float { perspective: 1100px; animation: cardFloat 6s ease-in-out infinite; }
+.tilt-stage[data-active='1'] .tilt-float { animation-play-state: paused; }
+.tilt-body {
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tilt-stage[data-active='1'] .tilt-body { transition: transform 0.1s linear; }
+.tilt-flip { transform-style: preserve-3d; transition: transform 0.75s cubic-bezier(0.3, 0.8, 0.2, 1); background: none; border: 0; padding: 0; color: inherit; }
+.tilt-flip[data-flipped='true'] { transform: rotateY(180deg); }
+.tilt-face { position: absolute; inset: 0; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.tilt-back { transform: rotateY(180deg); }
+.glint {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
+  background: radial-gradient(circle at var(--gx, 30%) var(--gy, 20%), rgba(255, 255, 255, 0.32), transparent 55%);
+}
+.tilt-stage[data-active='1'] .glint { opacity: 1; }
+@keyframes cardFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* One hand-drawn ring around a word in the headline, drawn once on load */
+.hand-ring path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: drawRing 1.1s 0.5s ease forwards; }
+@keyframes drawRing { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .tilt-float { animation: none; }
+  .hand-ring path { animation: none; stroke-dashoffset: 0; }
+  .tilt-body, .tilt-flip { transition: none; }
 }
