@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     strowallet_provider: str = "sterling"  # "sterling" (tested) or "fidelity" (untested) - never Nombank
     strowallet_live_enabled: bool = False  # second switch: must ALSO be true before STROWALLET_MODE=live does anything
     strowallet_verify_amount: str = "transaction"  # amount sent to StroWallet's verify call: "transaction" (gross) or "settled" (net). Not confirmed by StroWallet; change it here, not in code.
+    strowallet_webhook_ips: str = ""  # comma-separated caller IPs allowed to post webhooks (StroWallet says: 209.74.72.48); empty = no IP check
+    strowallet_webhook_ip_hops: int = 1  # which address from the right of X-Forwarded-For is the real caller (1 = last one)
     # Round 3B
     scheduler_enabled: bool = True  # run due scheduled transfers every minute while the server is awake
     cron_token: str = ""  # secret for POST /internal/run-schedules (an outside timer can wake the server); empty = endpoint off
