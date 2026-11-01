@@ -10,7 +10,7 @@ class WalletApplication(Base):
     __tablename__ = "wallet_applications"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     currency = Column(String(10), nullable=False)  # "BTC"
     reason = Column(Text, nullable=True)
     status = Column(String(20), nullable=False, default="pending")  # pending, approved, rejected

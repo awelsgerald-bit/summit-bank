@@ -62,8 +62,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchHistory();
-    const interval = setInterval(fetchHistory, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') fetchHistory();
+    }, POLL_INTERVAL_MS);
+    const onVisible = () => document.visibilityState === 'visible' && fetchHistory();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [fetchHistory]);
 
   if (!user) return null;

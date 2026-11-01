@@ -1,4 +1,6 @@
+import { Suspense } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import PageLoading from '../components/PageLoading';
 import { Anchor, Users, Receipt, Clock, LogOut, ShieldCheck, HandCoins, CreditCard, ShieldAlert, AlertTriangle, Bitcoin, LifeBuoy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -81,7 +83,9 @@ export default function AdminLayout() {
               </div>
             </header>
             <main className="px-5 sm:px-8 py-6 sm:py-8">
-              <Outlet />
+              <Suspense fallback={<PageLoading />}>
+                <Outlet />
+              </Suspense>
             </main>
           </div>
         </div>

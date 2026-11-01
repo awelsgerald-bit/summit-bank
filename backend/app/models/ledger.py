@@ -26,14 +26,14 @@ class LedgerEntry(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     entry_group_id = Column(String(64), nullable=False, index=True)
-    ledger_account_id = Column(Integer, ForeignKey("ledger_accounts.id"), nullable=False)
+    ledger_account_id = Column(Integer, ForeignKey("ledger_accounts.id"), nullable=False, index=True)
 
     direction = Column(String(10), nullable=False)  # "debit" or "credit"
     amount = Column(Numeric(20, 8), nullable=False)  # always positive; direction determines effect
     currency = Column(String(10), nullable=False)
 
     transaction_type = Column(String(30), nullable=False)  # "deposit", "withdrawal", etc.
-    reference_transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=True)
+    reference_transaction_id = Column(Integer, ForeignKey("transactions.id"), nullable=True, index=True)
     external_reference = Column(String(100), nullable=True)  # StroWallet/Paystack ref, for reconciliation
 
     status = Column(String(20), nullable=False, default="posted")  # posted, reversed

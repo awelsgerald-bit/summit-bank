@@ -10,7 +10,7 @@ class PaystackPayment(Base):
     __tablename__ = "paystack_payments"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     reference = Column(String(100), unique=True, nullable=False, index=True)
     amount = Column(Numeric(14, 2), nullable=False)
     status = Column(String(20), nullable=False, default="initialized")  # initialized, success, failed

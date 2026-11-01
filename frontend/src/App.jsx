@@ -1,4 +1,6 @@
+import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import PageLoading from './components/PageLoading';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import AppLayout from './layouts/AppLayout';
@@ -7,43 +9,44 @@ import AdminLayout from './layouts/AdminLayout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Transfer from './pages/Transfer';
-import Deposit from './pages/Deposit';
-import Withdraw from './pages/Withdraw';
-import History from './pages/History';
-import Profile from './pages/Profile';
-import Beneficiaries from './pages/Beneficiaries';
-import Receive from './pages/Receive';
-import Loans from './pages/Loans';
-import FixedDeposits from './pages/FixedDeposits';
-import Cards from './pages/Cards';
-import Kyc from './pages/Kyc';
-import PaymentCallback from './pages/PaymentCallback';
-import BtcWallet from './pages/BtcWallet';
-import BankAccount from './pages/BankAccount';
-import Settings from './pages/Settings';
-import Statements from './pages/Statements';
-import Receipt from './pages/Receipt';
-import SavedPayments from './pages/SavedPayments';
-import Contact from './pages/Contact';
-import Save4Me from './pages/Save4Me';
-import ScheduledTransfers from './pages/ScheduledTransfers';
-import Referrals from './pages/Referrals';
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Transfer = lazy(() => import('./pages/Transfer'));
+const Deposit = lazy(() => import('./pages/Deposit'));
+const Withdraw = lazy(() => import('./pages/Withdraw'));
+const History = lazy(() => import('./pages/History'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Beneficiaries = lazy(() => import('./pages/Beneficiaries'));
+const Receive = lazy(() => import('./pages/Receive'));
+const Loans = lazy(() => import('./pages/Loans'));
+const FixedDeposits = lazy(() => import('./pages/FixedDeposits'));
+const Cards = lazy(() => import('./pages/Cards'));
+const Kyc = lazy(() => import('./pages/Kyc'));
+const PaymentCallback = lazy(() => import('./pages/PaymentCallback'));
+const BtcWallet = lazy(() => import('./pages/BtcWallet'));
+const BankAccount = lazy(() => import('./pages/BankAccount'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Statements = lazy(() => import('./pages/Statements'));
+const Receipt = lazy(() => import('./pages/Receipt'));
+const SavedPayments = lazy(() => import('./pages/SavedPayments'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Save4Me = lazy(() => import('./pages/Save4Me'));
+const ScheduledTransfers = lazy(() => import('./pages/ScheduledTransfers'));
+const Referrals = lazy(() => import('./pages/Referrals'));
 
-import AdminPending from './pages/admin/AdminPending';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminTransactions from './pages/admin/AdminTransactions';
-import AdminTransactionDetail from './pages/admin/AdminTransactionDetail';
-import AdminLoans from './pages/admin/AdminLoans';
-import AdminCards from './pages/admin/AdminCards';
-import AdminKyc from './pages/admin/AdminKyc';
-import AdminFlagged from './pages/admin/AdminFlagged';
-import AdminWalletApplications from './pages/admin/AdminWalletApplications';
-import AdminSupport from './pages/admin/AdminSupport';
+const AdminPending = lazy(() => import('./pages/admin/AdminPending'));
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminTransactions = lazy(() => import('./pages/admin/AdminTransactions'));
+const AdminTransactionDetail = lazy(() => import('./pages/admin/AdminTransactionDetail'));
+const AdminLoans = lazy(() => import('./pages/admin/AdminLoans'));
+const AdminCards = lazy(() => import('./pages/admin/AdminCards'));
+const AdminKyc = lazy(() => import('./pages/admin/AdminKyc'));
+const AdminFlagged = lazy(() => import('./pages/admin/AdminFlagged'));
+const AdminWalletApplications = lazy(() => import('./pages/admin/AdminWalletApplications'));
+const AdminSupport = lazy(() => import('./pages/admin/AdminSupport'));
 
 function App() {
   return (
+    <Suspense fallback={<PageLoading />}>
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
@@ -95,6 +98,7 @@ function App() {
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
+    </Suspense>
   );
 }
 
