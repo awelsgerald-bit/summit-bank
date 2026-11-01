@@ -10,7 +10,7 @@ class Loan(Base):
     __tablename__ = "loans"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     principal_amount = Column(Numeric(14, 2), nullable=False)
     interest_rate = Column(Numeric(5, 2), nullable=False, default=10.00)  # % flat, e.g. 10.00 = 10%

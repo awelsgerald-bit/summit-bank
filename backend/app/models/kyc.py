@@ -10,7 +10,7 @@ class KYCSubmission(Base):
     __tablename__ = "kyc_submissions"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     full_legal_name = Column(String(150), nullable=False)
     date_of_birth = Column(String(10), nullable=False)  # stored as "YYYY-MM-DD" string, kept simple

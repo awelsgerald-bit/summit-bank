@@ -11,7 +11,7 @@ class Beneficiary(Base):
     __table_args__ = (UniqueConstraint("user_id", "account_number", name="uq_user_beneficiary_account"),)
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     nickname = Column(String(100), nullable=False)
     account_number = Column(String(20), nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

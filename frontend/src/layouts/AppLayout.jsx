@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   Anchor,
@@ -29,6 +29,7 @@ import { useAuth } from '../context/AuthContext';
 import MoreMenuSheet from '../components/MoreMenuSheet';
 import Avatar from '../components/Avatar';
 import ThemeToggle from '../components/ThemeToggle';
+import PageLoading from '../components/PageLoading';
 
 const primaryNav = [
   { to: '/dashboard', label: 'Home', icon: Home },
@@ -69,6 +70,19 @@ export default function AppLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
+
+  // Once the first screen is up, quietly fetch the pages people open next so taps feel instant.
+  useEffect(() => {
+    const warm = () => {
+      import('../pages/Transfer');
+      import('../pages/History');
+      import('../pages/Receive');
+      import('../pages/Settings');
+    };
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 1500));
+    const handle = idle(warm);
+    return () => (window.cancelIdleCallback ? window.cancelIdleCallback(handle) : clearTimeout(handle));
+  }, []);
 
   function handleLogout() {
     logout();
@@ -152,7 +166,9 @@ export default function AppLayout() {
         <main className="sheet flex-1 rounded-t-[36px] lg:rounded-[32px] px-5 sm:px-8 pt-3 pb-36 lg:pt-8 lg:pb-10 shadow-2xl">
           <div className="w-10 h-1 rounded-full bg-[#c9c3d6] mx-auto mb-5 lg:hidden" aria-hidden="true" />
           <div className="max-w-5xl mx-auto">
-            <Outlet />
+            <Suspense fallback={<PageLoading />}>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>

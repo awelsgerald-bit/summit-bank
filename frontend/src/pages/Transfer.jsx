@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bookmark, ChevronLeft, Clock, QrCode } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import BankCard from '../components/BankCard';
-import QrScannerModal from '../components/QrScannerModal';
+// The camera scanner is a big library; load it only when someone taps "Scan QR".
+const QrScannerModal = lazy(() => import('../components/QrScannerModal'));
 import RecipientLookup from '../components/RecipientLookup';
 import { errorMessage } from '../utils/errors';
 
@@ -203,10 +204,12 @@ export default function Transfer() {
 
       {/* QR Scanner Modal */}
       {scannerOpen && (
-        <QrScannerModal
-          onScan={handleScan}
-          onClose={() => setScannerOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <QrScannerModal
+            onScan={handleScan}
+            onClose={() => setScannerOpen(false)}
+          />
+        </Suspense>
       )}
 
       <div className="flex items-center gap-3 mb-1">
@@ -249,6 +252,7 @@ export default function Transfer() {
         <button
           type="button"
           onClick={() => setScannerOpen(true)}
+          onPointerEnter={() => import('../components/QrScannerModal')}
           className="ghost-btn w-full rounded-2xl py-2.5 text-xs flex items-center justify-center gap-2"
         >
           <QrCode size={14} />

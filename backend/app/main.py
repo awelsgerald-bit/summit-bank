@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc, payments, strowallet, admin_strowallet, statements, saved_payments, support, savings, scheduled_transfers, referrals, internal
 from app.core.config import settings
@@ -49,6 +50,8 @@ app = FastAPI(title="Summit Bank API", version="0.1.0", lifespan=lifespan)
 
 register_exception_handlers(app)
 
+# Smaller responses, faster on phones. (Added first so CORS stays the outermost layer.)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
