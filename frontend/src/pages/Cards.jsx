@@ -16,7 +16,7 @@ function ApprovedCardFace({ card, onToggleFreeze, busy }) {
     <div className="space-y-3">
     <div className={`relative card-glow transition ${card.is_frozen ? 'opacity-60 grayscale' : ''}`}>
       <div
-        className="rounded-[24px] p-6 relative overflow-hidden shadow-2xl"
+        className="card-dark rounded-[24px] p-6 relative overflow-hidden shadow-2xl"
         style={{
           background: 'linear-gradient(135deg,#3B1F78 0%, #2A1458 55%, #1B0E3A 100%)',
           border: '1px solid rgba(255,255,255,0.08)',

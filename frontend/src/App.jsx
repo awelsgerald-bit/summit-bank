@@ -1,4 +1,7 @@
+import { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { page } from './utils/lazyPage';
+import PageLoader from './components/PageLoader';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import AppLayout from './layouts/AppLayout';
@@ -7,43 +10,44 @@ import AdminLayout from './layouts/AdminLayout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Transfer from './pages/Transfer';
-import Deposit from './pages/Deposit';
-import Withdraw from './pages/Withdraw';
-import History from './pages/History';
-import Profile from './pages/Profile';
-import Beneficiaries from './pages/Beneficiaries';
-import Receive from './pages/Receive';
-import Loans from './pages/Loans';
-import FixedDeposits from './pages/FixedDeposits';
-import Cards from './pages/Cards';
-import Kyc from './pages/Kyc';
-import PaymentCallback from './pages/PaymentCallback';
-import BtcWallet from './pages/BtcWallet';
-import BankAccount from './pages/BankAccount';
-import Settings from './pages/Settings';
-import Statements from './pages/Statements';
-import Receipt from './pages/Receipt';
-import SavedPayments from './pages/SavedPayments';
-import Contact from './pages/Contact';
-import Save4Me from './pages/Save4Me';
-import ScheduledTransfers from './pages/ScheduledTransfers';
-import Referrals from './pages/Referrals';
+const Dashboard = page('/dashboard', () => import('./pages/Dashboard'));
+const Transfer = page('/transfer', () => import('./pages/Transfer'));
+const Deposit = page('/deposit', () => import('./pages/Deposit'));
+const Withdraw = page('/withdraw', () => import('./pages/Withdraw'));
+const History = page('/history', () => import('./pages/History'));
+const Profile = page('/profile', () => import('./pages/Profile'));
+const Beneficiaries = page('/beneficiaries', () => import('./pages/Beneficiaries'));
+const Receive = page('/receive', () => import('./pages/Receive'));
+const Loans = page('/loans', () => import('./pages/Loans'));
+const FixedDeposits = page('/fixed-deposits', () => import('./pages/FixedDeposits'));
+const Cards = page('/cards', () => import('./pages/Cards'));
+const Kyc = page('/kyc', () => import('./pages/Kyc'));
+const PaymentCallback = page('/payment-callback', () => import('./pages/PaymentCallback'));
+const BtcWallet = page('/btc-wallet', () => import('./pages/BtcWallet'));
+const BankAccount = page('/bank-account', () => import('./pages/BankAccount'));
+const Settings = page('/settings', () => import('./pages/Settings'));
+const Statements = page('/statements', () => import('./pages/Statements'));
+const Receipt = page('/receipt/:id', () => import('./pages/Receipt'));
+const SavedPayments = page('/saved-payments', () => import('./pages/SavedPayments'));
+const Contact = page('/contact', () => import('./pages/Contact'));
+const Save4Me = page('/save4me', () => import('./pages/Save4Me'));
+const ScheduledTransfers = page('/scheduled', () => import('./pages/ScheduledTransfers'));
+const Referrals = page('/referrals', () => import('./pages/Referrals'));
 
-import AdminPending from './pages/admin/AdminPending';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminTransactions from './pages/admin/AdminTransactions';
-import AdminTransactionDetail from './pages/admin/AdminTransactionDetail';
-import AdminLoans from './pages/admin/AdminLoans';
-import AdminCards from './pages/admin/AdminCards';
-import AdminKyc from './pages/admin/AdminKyc';
-import AdminFlagged from './pages/admin/AdminFlagged';
-import AdminWalletApplications from './pages/admin/AdminWalletApplications';
-import AdminSupport from './pages/admin/AdminSupport';
+const AdminPending = page('/admin/pending', () => import('./pages/admin/AdminPending'));
+const AdminUsers = page('/admin/users', () => import('./pages/admin/AdminUsers'));
+const AdminTransactions = page('/admin/transactions', () => import('./pages/admin/AdminTransactions'));
+const AdminTransactionDetail = page('/admin/transactions/:id', () => import('./pages/admin/AdminTransactionDetail'));
+const AdminLoans = page('/admin/loans', () => import('./pages/admin/AdminLoans'));
+const AdminCards = page('/admin/cards', () => import('./pages/admin/AdminCards'));
+const AdminKyc = page('/admin/kyc', () => import('./pages/admin/AdminKyc'));
+const AdminFlagged = page('/admin/flagged', () => import('./pages/admin/AdminFlagged'));
+const AdminWalletApplications = page('/admin/wallet-applications', () => import('./pages/admin/AdminWalletApplications'));
+const AdminSupport = page('/admin/support', () => import('./pages/admin/AdminSupport'));
 
 function App() {
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
@@ -95,6 +99,7 @@ function App() {
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
+    </Suspense>
   );
 }
 

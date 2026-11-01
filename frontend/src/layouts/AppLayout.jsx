@@ -25,7 +25,10 @@ import {
   CalendarClock,
   Gift,
 } from 'lucide-react';
+import { Suspense, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import PageLoader from '../components/PageLoader';
+import { preloadRoute, preloadWhenIdle } from '../utils/lazyPage';
 import MoreMenuSheet from '../components/MoreMenuSheet';
 import Avatar from '../components/Avatar';
 import ThemeToggle from '../components/ThemeToggle';
@@ -70,6 +73,10 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
 
+  useEffect(() => {
+    preloadWhenIdle(['/dashboard', '/transfer', '/history', '/receive', '/settings']);
+  }, []);
+
   function handleLogout() {
     logout();
     navigate('/login');
@@ -92,7 +99,7 @@ export default function AppLayout() {
         </div>
 
         {primaryNav.map((item) => (
-          <NavLink key={item.to} to={item.to} className={navLinkClass}>
+          <NavLink key={item.to} to={item.to} className={navLinkClass} onPointerEnter={() => preloadRoute(item.to)} onTouchStart={() => preloadRoute(item.to)} onFocus={() => preloadRoute(item.to)}>
             <item.icon size={18} strokeWidth={1.7} />
             {item.label}
           </NavLink>
@@ -100,7 +107,7 @@ export default function AppLayout() {
 
         <p className="text-xs text-[var(--text-3)] px-4 mt-6 mb-1">More</p>
         {moreNav.map((item) => (
-          <NavLink key={item.to} to={item.to} className={navLinkClass}>
+          <NavLink key={item.to} to={item.to} className={navLinkClass} onPointerEnter={() => preloadRoute(item.to)} onTouchStart={() => preloadRoute(item.to)} onFocus={() => preloadRoute(item.to)}>
             <item.icon size={18} strokeWidth={1.7} />
             {item.label}
           </NavLink>
@@ -152,7 +159,9 @@ export default function AppLayout() {
         <main className="sheet flex-1 rounded-t-[36px] lg:rounded-[32px] px-5 sm:px-8 pt-3 pb-36 lg:pt-8 lg:pb-10 shadow-2xl">
           <div className="w-10 h-1 rounded-full bg-[#c9c3d6] mx-auto mb-5 lg:hidden" aria-hidden="true" />
           <div className="max-w-5xl mx-auto">
-            <Outlet />
+            <Suspense fallback={<PageLoader />}>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>
@@ -166,6 +175,8 @@ export default function AppLayout() {
             <NavLink
               key={item.to}
               to={item.to}
+              onPointerEnter={() => preloadRoute(item.to)}
+              onTouchStart={() => preloadRoute(item.to)}
               aria-label={item.label}
               className="-mt-7 w-14 h-14 rounded-full bg-[var(--rose)] text-[#1a1426] flex items-center justify-center shadow-xl transition active:scale-95"
             >
@@ -175,6 +186,8 @@ export default function AppLayout() {
             <NavLink
               key={item.to}
               to={item.to}
+              onPointerEnter={() => preloadRoute(item.to)}
+              onTouchStart={() => preloadRoute(item.to)}
               aria-label={item.label}
               className={({ isActive }) =>
                 `w-12 h-12 rounded-full flex items-center justify-center transition ${

@@ -130,7 +130,7 @@ export default function Kyc() {
               style={{ colorScheme: 'dark' }}
             >
               {ID_TYPES.map((t) => (
-                <option key={t.value} value={t.value} className="bg-[#17122A]">
+                <option key={t.value} value={t.value}>
                   {t.label}
                 </option>
               ))}
