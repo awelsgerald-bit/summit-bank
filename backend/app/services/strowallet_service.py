@@ -209,8 +209,10 @@ def apply_for_account(db: Session, user: User, phone: str | None = None) -> Stro
         "account_name": account_name,
         "phone": normalized_phone,
         "webhook_url": cfg["webhook_url"],
-        "mode": cfg["mode"],
     }
+    # StroWallet support (ticket #1861): live needs no mode field at all; only sandbox sends one.
+    if cfg["mode"] == "sandbox":
+        body["mode"] = "sandbox"
 
     try:
         response = httpx.post(
