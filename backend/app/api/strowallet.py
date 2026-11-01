@@ -56,6 +56,23 @@ def _webhook_token_is_valid(token: str) -> bool:
     return hmac.compare_digest((token or "").encode("utf-8"), secret.encode("utf-8"))
 
 
+def _caller_ip(request: Request) -> tuple[str, str]:
+    """The caller's address as our host sees it, and the raw chain, for logging. The platform adds the
+    real caller to the END of X-Forwarded-For, so we count from the right (anything to its left can be forged)."""
+    chain = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+    direct = request.client.host if request.client else ""
+    hops = max(1, int(settings.strowallet_webhook_ip_hops or 1))
+    ip = chain[-hops] if len(chain) >= hops else direct
+    return ip, f"xff={','.join(chain) or '-'} direct={direct or '-'}"
+
+
+def _webhook_ip_allowed(request: Request) -> bool:
+    allowed = {p.strip() for p in (settings.strowallet_webhook_ips or "").split(",") if p.strip()}
+    ip, detail = _caller_ip(request)
+    logger.info("StroWallet webhook caller %s picked=%s", detail, ip)
+    return not allowed or ip in allowed
+
+
 @router.post(
     "/apply",
     response_model=StroWalletAccountResponse,
@@ -102,6 +119,10 @@ async def strowallet_webhook(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid webhook token",
         )
+
+    # 1b. Optional second lock: only StroWallet's address may post (set STROWALLET_WEBHOOK_IPS).
+    if not _webhook_ip_allowed(request):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Caller not allowed")
 
     # 2. Refuse absurdly large bodies without buffering them.
     max_bytes = strowallet_webhook_service.MAX_BODY_BYTES
