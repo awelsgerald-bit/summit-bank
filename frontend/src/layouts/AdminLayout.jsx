@@ -14,6 +14,9 @@ const navItems = [
   { to: '/admin/support', label: 'Support', icon: LifeBuoy },
 ];
 
+import { Suspense } from 'react';
+import PageLoader from '../components/PageLoader';
+
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -81,7 +84,9 @@ export default function AdminLayout() {
               </div>
             </header>
             <main className="px-5 sm:px-8 py-6 sm:py-8">
-              <Outlet />
+              <Suspense fallback={<PageLoader />}>
+                <Outlet />
+              </Suspense>
             </main>
           </div>
         </div>

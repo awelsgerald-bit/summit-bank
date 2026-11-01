@@ -28,7 +28,7 @@ export default function BankCard({ accountNumber, cardHolder, balance, createdAt
   return (
     <div className="relative card-glow">
       <div
-        className="rounded-[28px] p-6 sm:p-7 relative overflow-hidden shadow-2xl"
+        className="card-dark rounded-[28px] p-6 sm:p-7 relative overflow-hidden shadow-2xl"
         style={{
           background: '#14101F',
           border: '1px solid rgba(255,255,255,0.08)',

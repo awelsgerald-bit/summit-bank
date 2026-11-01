@@ -132,7 +132,7 @@ export default function Loans() {
               style={{ colorScheme: 'dark' }}
             >
               {[3, 6, 12, 24, 36].map((m) => (
-                <option key={m} value={m} className="bg-[#17122A]">
+                <option key={m} value={m}>
                   {m} months
                 </option>
               ))}

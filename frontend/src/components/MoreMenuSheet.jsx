@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronRight, LogOut, ShieldCheck, X } from 'lucide-react';
 import Blobs from './Blobs';
+import { preloadRoute } from '../utils/lazyPage';
 
 // The phone menu: a full-screen dark page with one tidy list on a white card.
 export default function MoreMenuSheet({ items, onClose, isAdmin, onLogout }) {
@@ -35,6 +36,8 @@ export default function MoreMenuSheet({ items, onClose, isAdmin, onLogout }) {
               key={item.to}
               to={item.to}
               onClick={onClose}
+              onPointerEnter={() => preloadRoute(item.to)}
+              onTouchStart={() => preloadRoute(item.to)}
               className={({ isActive }) => `${row} ${isActive ? 'text-[var(--text-1)] bg-[#ece8f4]' : 'text-[var(--text-1)]'}`}
             >
               <span className="w-8 h-8 rounded-[10px] bg-[#e8e2f5] text-[#3b2a66] flex items-center justify-center shrink-0">

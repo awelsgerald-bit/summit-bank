@@ -62,8 +62,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchHistory();
-    const interval = setInterval(fetchHistory, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+    const tick = () => {
+      if (!document.hidden) fetchHistory();
+    };
+    const interval = setInterval(tick, POLL_INTERVAL_MS);
+    document.addEventListener('visibilitychange', tick);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', tick);
+    };
   }, [fetchHistory]);
 
   if (!user) return null;
