@@ -2,6 +2,7 @@ import random
 import string
 
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.security import hash_password, verify_password
@@ -19,7 +20,7 @@ def generate_account_number(db: Session) -> str:
 
 
 def create_user(db: Session, user_data: UserRegister) -> User:
-    existing = db.query(User).filter(User.email == user_data.email).first()
+    existing = db.query(User).filter(func.lower(User.email) == user_data.email.strip().lower()).first()
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -48,7 +49,8 @@ def create_user(db: Session, user_data: UserRegister) -> User:
 
 
 def authenticate_user(db: Session, email: str, password: str) -> User:
-    user = db.query(User).filter(User.email == email).first()
+    email = (email or "").strip()
+    user = db.query(User).filter(func.lower(User.email) == email.lower()).first()
     if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
