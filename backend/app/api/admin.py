@@ -30,6 +30,27 @@ def list_users(
     return db.query(User).order_by(User.created_at.desc()).all()
 
 
+@router.patch("/users/{user_id}/active", response_model=AdminUserResponse)
+def set_user_active(
+    user_id: int,
+    payload: dict,
+    admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Switch an account on or off for QR payments (sending and receiving). Body: {"is_active": false}."""
+    if not isinstance(payload.get("is_active"), bool):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Send {"is_active": true} or {"is_active": false}')
+    target = db.query(User).filter(User.id == user_id).first()
+    if target is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    if target.id == admin.id and not payload["is_active"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot deactivate your own account")
+    target.is_active = payload["is_active"]
+    db.commit()
+    db.refresh(target)
+    return target
+
+
 @router.get("/transactions", response_model=list[AdminTransactionResponse])
 def list_all_transactions(
     admin: User = Depends(require_admin),

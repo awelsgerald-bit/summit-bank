@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, History as HistoryIcon } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, History as HistoryIcon, ScanLine } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
@@ -90,10 +90,11 @@ export default function Dashboard() {
         }}
       />
 
-      <div className="grid grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-5 gap-2 sm:gap-4">
         <QuickAction to="/deposit" label="Deposit" icon={<ArrowDownLeft size={18} />} />
         <QuickAction to="/withdraw" label="Withdraw" icon={<ArrowUpRight size={18} />} />
         <QuickAction to="/transfer" label="Transfer" icon={<ArrowLeftRight size={18} />} />
+        <QuickAction to="/scan-pay" label="Scan" icon={<ScanLine size={18} />} />
         <QuickAction to="/history" label="History" icon={<HistoryIcon size={18} />} />
       </div>
 

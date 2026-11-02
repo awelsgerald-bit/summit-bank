@@ -109,6 +109,11 @@ def _approve_usd(db: Session, tx: Transaction) -> None:
         sender.balance = sender.balance - tx.amount
         receiver.balance = receiver.balance + tx.amount
 
+        ledger_service.record_transfer(
+            db, sender_id=sender.id, receiver_id=receiver.id, amount=tx.amount, currency="NGN",
+            reference_transaction_id=tx.id,
+        )
+
 
 def _approve_btc(db: Session, tx: Transaction) -> None:
     if tx.transaction_type == TransactionType.DEPOSIT:

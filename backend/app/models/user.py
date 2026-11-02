@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey, Text
+from sqlalchemy import Boolean, Column, Integer, String, Numeric, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
+
+from sqlalchemy import true as sa_true
 
 from app.database import Base
 
@@ -31,6 +33,7 @@ class User(Base):
     pin_locked_until = Column(DateTime(timezone=True), nullable=True)
     referral_code = Column(String(12), unique=True, index=True, nullable=True)  # made on first use
     referred_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    is_active = Column(Boolean, nullable=False, default=True, server_default=sa_true())  # False = cannot send or receive QR payments
     avatar = Column(Text, nullable=True)  # small profile picture as a data URL (<= 200 KB)
     
     sent_transactions = relationship(
