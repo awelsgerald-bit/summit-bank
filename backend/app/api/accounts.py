@@ -30,7 +30,10 @@ def get_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    fixed_deposit_service.credit_matured_deposits(db, current_user)
+    try:  # a failure here must never stop the profile (and therefore the login) from loading
+        fixed_deposit_service.credit_matured_deposits(db, current_user)
+    except Exception:
+        db.rollback()
     try:  # opportunistic: run this user's due scheduled transfers whenever the app is opened
         scheduled_transfer_service.run_due(db, user_id=current_user.id)
     except Exception:

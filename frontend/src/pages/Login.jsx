@@ -15,13 +15,16 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (submitting) return;
     setError('');
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password.');
+      if (err.friendly) setError(err.message);
+      else if (err.response) setError(err.response.data?.message || 'Invalid email or password.');
+      else setError('Could not reach the server. Check your connection and tap Sign in again.');
     } finally {
       setSubmitting(false);
     }
