@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Upload, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 
-const REGION_ID = 'qr-scanner-region';
+const REGION_ID = 'qr-camera-region';
 const FILE_REGION_ID = 'qr-file-region';
 
 function cameraProblem(err) {
@@ -22,14 +21,13 @@ function cameraProblem(err) {
   return 'Could not start the camera. You can upload a picture of the QR code instead.';
 }
 
-// Scans a Summit Bank QR code with the camera, or from a picture. Calls onScan(text) once,
-// or onScan(null, message) when scanning cannot work.
-export default function QrScannerModal({ onScan, onClose }) {
+// The camera view for scanning a QR code, framed like the Summit Bank cards. It asks for camera
+// permission when it appears. Calls onScan(text) once per mount.
+export default function QrCamera({ onScan }) {
   const [problem, setProblem] = useState('');
   const [starting, setStarting] = useState(true);
-  // The parent passes a new function on every render; keep the latest one without restarting the camera.
   const onScanRef = useRef(onScan);
-  onScanRef.current = onScan;
+  onScanRef.current = onScan; // the parent passes a new function each render; keep the camera running
   const doneRef = useRef(false);
 
   useEffect(() => {
@@ -44,10 +42,9 @@ export default function QrScannerModal({ onScan, onClose }) {
     }
 
     async function begin() {
-      const config = { fps: 10, qrbox: (w, h) => { const side = Math.floor(Math.min(w, h) * 0.75); return { width: side, height: side }; } };
-      const attempts = [{ facingMode: 'environment' }, { facingMode: 'user' }];
+      const config = { fps: 10, aspectRatio: 1 };
       let lastError = null;
-      for (const camera of attempts) {
+      for (const camera of [{ facingMode: 'environment' }, { facingMode: 'user' }]) {
         if (cancelled) return;
         try {
           await scanner.start(camera, config, (text) => finish(text), () => {});
@@ -60,7 +57,7 @@ export default function QrScannerModal({ onScan, onClose }) {
           return;
         } catch (err) {
           lastError = err;
-          if ((err?.name || '') === 'NotAllowedError') break; // asking again will not help
+          if ((err?.name || '') === 'NotAllowedError') break;
         }
       }
       if (!cancelled) {
@@ -95,28 +92,24 @@ export default function QrScannerModal({ onScan, onClose }) {
     }
   }
 
-  return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Scan to send">
-      <div className="panel rounded-3xl p-6 max-w-sm w-full">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display text-base font-medium">Scan to send</h3>
-          <button onClick={onClose} aria-label="Close scanner" className="text-[var(--text-2)] w-9 h-9 flex items-center justify-center">
-            <X size={20} />
-          </button>
-        </div>
-        <div id={REGION_ID} className="rounded-2xl overflow-hidden bg-black/30 min-h-[200px]" />
-        <div id={FILE_REGION_ID} className="hidden" />
-        {starting && !problem && <p className="text-xs text-[var(--text-3)] text-center mt-3">Starting the camera. Allow access if your browser asks.</p>}
-        {problem && <p className="text-sm text-[var(--danger)] text-center mt-3" role="alert">{problem}</p>}
-        {!problem && !starting && (
-          <p className="text-xs text-[var(--text-3)] text-center mt-3">Point your camera at a Summit Bank QR code</p>
+  return (
+    <div>
+      <div className="scan-frame card-dark">
+        <div id={REGION_ID} className="scan-video" />
+        <span className="scan-corner tl" /><span className="scan-corner tr" />
+        <span className="scan-corner bl" /><span className="scan-corner br" />
+        {!problem && !starting && <span className="scan-line" />}
+        {(starting || problem) && (
+          <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm" style={{ color: '#cfc8e0' }} role={problem ? 'alert' : 'status'}>
+            {problem || 'Starting the camera. Allow access if your browser asks.'}
+          </div>
         )}
-        <label className="ghost-btn mt-4 w-full rounded-2xl py-2.5 text-xs flex items-center justify-center gap-2 cursor-pointer">
-          <Upload size={14} /> Upload a picture of the QR code
-          <input type="file" accept="image/*" className="sr-only" onChange={scanPicture} />
-        </label>
       </div>
-    </div>,
-    document.body
+      <div id={FILE_REGION_ID} className="hidden" />
+      <label className="ghost-btn mt-4 w-full rounded-2xl py-3 text-xs flex items-center justify-center gap-2 cursor-pointer">
+        <Upload size={14} /> Upload a picture of the QR code
+        <input type="file" accept="image/*" className="sr-only" onChange={scanPicture} />
+      </label>
+    </div>
   );
 }

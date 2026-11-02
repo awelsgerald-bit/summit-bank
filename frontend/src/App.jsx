@@ -18,6 +18,7 @@ const History = page('/history', () => import('./pages/History'));
 const Profile = page('/profile', () => import('./pages/Profile'));
 const Beneficiaries = page('/beneficiaries', () => import('./pages/Beneficiaries'));
 const Receive = page('/receive', () => import('./pages/Receive'));
+const ScanPay = page('/scan-pay', () => import('./pages/ScanPay'));
 const Loans = page('/loans', () => import('./pages/Loans'));
 const FixedDeposits = page('/fixed-deposits', () => import('./pages/FixedDeposits'));
 const Cards = page('/cards', () => import('./pages/Cards'));
@@ -64,6 +65,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/beneficiaries" element={<Beneficiaries />} />
           <Route path="/receive" element={<Receive />} />
+          <Route path="/scan-pay" element={<ScanPay />} />
           <Route path="/loans" element={<Loans />} />
           <Route path="/fixed-deposits" element={<FixedDeposits />} />
           <Route path="/cards" element={<Cards />} />

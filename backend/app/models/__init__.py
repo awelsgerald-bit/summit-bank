@@ -17,7 +17,9 @@ from app.models.support_ticket import SupportTicket
 from app.models.savings import SavingsPot, SavingsMovement
 from app.models.scheduled_transfer import ScheduledTransfer, ScheduledTransferRun
 from app.models.referral import ReferralReward
+from app.models.qr import QrPaymentRequest, QrTransfer
+from app.models.webauthn import WebAuthnCredential
 __all__ = [
     "User", "Transaction", "TransactionType", "Wallet", "ExchangeRate",
-    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication","LedgerAccount", "LedgerEntry","StroWalletAccount", "StroWalletWebhookEvent", "SavedPayment", "SupportTicket", "SavingsPot", "SavingsMovement", "ScheduledTransfer", "ScheduledTransferRun", "ReferralReward"
+    "Beneficiary", "Loan", "FixedDeposit", "CardApplication", "KYCSubmission","PaystackPayment","WalletApplication","LedgerAccount", "LedgerEntry","StroWalletAccount", "StroWalletWebhookEvent", "SavedPayment", "SupportTicket", "SavingsPot", "SavingsMovement", "ScheduledTransfer", "ScheduledTransferRun", "ReferralReward", "QrPaymentRequest", "QrTransfer", "WebAuthnCredential"
 ]

@@ -30,4 +30,10 @@ class Settings(BaseSettings):
     referral_bonus_amount: Decimal = Decimal("500")  # paid to EACH side (still needs admin approval)
     referral_min_first_deposit: Decimal = Decimal("5000")  # the new user's approved deposit must be at least this
     referral_max_rewards_per_user: int = 20
+    # QR transfers
+    qr_transfer_max_amount: Decimal = Decimal("500000")  # most one QR payment can be
+    qr_daily_limit: Decimal = Decimal("2000000")  # most one person can send by QR in a day (Nigerian time)
+    qr_request_max_open: int = 20  # open payment requests one person can have at once
+
+
 settings = Settings()

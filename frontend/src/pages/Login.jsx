@@ -1,17 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Anchor, Eye, EyeOff } from 'lucide-react';
+import { Anchor, Eye, EyeOff, Fingerprint } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Blobs from '../components/Blobs';
+import { biometricSupported, hasBiometricOnThisDevice, signInWithBiometric } from '../utils/biometric';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginWithToken } = useAuth();
+  const [bioReady, setBioReady] = useState(false);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (hasBiometricOnThisDevice()) biometricSupported().then(setBioReady);
+  }, []);
+
+  async function handleBiometric() {
+    if (submitting) return;
+    setError('');
+    setSubmitting(true);
+    try {
+      const token = await signInWithBiometric();
+      await loginWithToken(token);
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Fingerprint sign-in failed. Use your password.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -87,6 +108,12 @@ export default function Login() {
               {submitting ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
+
+          {bioReady && (
+            <button type="button" onClick={handleBiometric} disabled={submitting} className="ghost-btn w-full rounded-xl py-3 text-sm mt-3 flex items-center justify-center gap-2">
+              <Fingerprint size={18} /> Sign in with fingerprint / Face ID
+            </button>
+          )}
 
           <p className="text-center text-sm text-[var(--text-2)] mt-6">
             New to Summit Bank?{' '}

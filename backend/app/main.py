@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc, payments, strowallet, admin_strowallet, statements, saved_payments, support, savings, scheduled_transfers, referrals, internal
+from app.api import accounts, auth, admin, transactions, wallets, beneficiaries, loans, fixed_deposits, cards, kyc, payments, strowallet, admin_strowallet, statements, saved_payments, support, savings, scheduled_transfers, referrals, internal, qr, biometric
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.database import Base, engine
@@ -77,6 +77,8 @@ app.include_router(savings.router)
 app.include_router(scheduled_transfers.router)
 app.include_router(referrals.router)
 app.include_router(internal.router)
+app.include_router(qr.router)
+app.include_router(biometric.router)
 
 @app.get("/health")
 def health_check():

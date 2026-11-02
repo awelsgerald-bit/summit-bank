@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bookmark, ChevronLeft, Clock, QrCode } from 'lucide-react';
+import { Bookmark, ChevronLeft, Clock, QrCode, ScanLine } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import BankCard from '../components/BankCard';
-import QrScannerModal from '../components/QrScannerModal';
 import RecipientLookup from '../components/RecipientLookup';
 import { errorMessage } from '../utils/errors';
 
@@ -27,9 +26,6 @@ export default function Transfer() {
   // Beneficiaries
   const [beneficiaries, setBeneficiaries] = useState([]);
 
-  // QR Scanner
-  const [scannerOpen, setScannerOpen] = useState(false);
-  const [scannedName, setScannedName] = useState('');
 
   useEffect(() => {
     api
@@ -37,42 +33,6 @@ export default function Transfer() {
       .then((res) => setBeneficiaries(res.data))
       .catch(() => {});
   }, []);
-
-  function handleScan(decodedText, scanError) {
-    setScannerOpen(false);
-
-    if (scanError) {
-      setError(scanError);
-      return;
-    }
-
-    const plain = String(decodedText || '').trim();
-    if (/^\d{10}$/.test(plain)) {
-      setRecipientAccount(plain);
-      setScannedName('');
-      setError('');
-      return;
-    }
-
-    try {
-      const data = JSON.parse(decodedText);
-
-      if (
-        data.type === 'summit_bank_account' &&
-        data.account_number
-      ) {
-        setRecipientAccount(data.account_number);
-        setScannedName(data.name || '');
-        setError('');
-      } else {
-        setError(
-          "That QR code isn't a valid Summit Bank account code."
-        );
-      }
-    } catch {
-      setError('Could not read that QR code.');
-    }
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -201,14 +161,6 @@ export default function Transfer() {
   return (
     <div className="max-w-lg mx-auto space-y-6 stagger">
 
-      {/* QR Scanner Modal */}
-      {scannerOpen && (
-        <QrScannerModal
-          onScan={handleScan}
-          onClose={() => setScannerOpen(false)}
-        />
-      )}
-
       <div className="flex items-center gap-3 mb-1">
         <button
           onClick={() => navigate('/dashboard')}
@@ -245,15 +197,15 @@ export default function Transfer() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        {/* Scan QR */}
-        <button
-          type="button"
-          onClick={() => setScannerOpen(true)}
-          className="ghost-btn w-full rounded-2xl py-2.5 text-xs flex items-center justify-center gap-2"
-        >
-          <QrCode size={14} />
-          Scan QR to fill recipient
-        </button>
+        {/* Scan & Pay / My QR */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link to="/scan-pay" className="ghost-btn rounded-2xl py-3 text-xs flex items-center justify-center gap-2">
+            <ScanLine size={15} /> Scan &amp; Pay
+          </Link>
+          <Link to="/receive" className="ghost-btn rounded-2xl py-3 text-xs flex items-center justify-center gap-2">
+            <QrCode size={15} /> My QR code
+          </Link>
+        </div>
 
         {/* Beneficiary Picker */}
         {beneficiaries.length > 0 && (
@@ -264,7 +216,6 @@ export default function Transfer() {
                 type="button"
                 onClick={() => {
                   setRecipientAccount(b.account_number);
-                  setScannedName('');
                 }}
                 className="toggle-pill rounded-full px-3 py-1.5 text-xs whitespace-nowrap text-[var(--text-2)] hover:text-[var(--text-1)] shrink-0"
               >
@@ -286,7 +237,6 @@ export default function Transfer() {
               value={recipientAccount}
               onChange={(e) => {
                 setRecipientAccount(e.target.value);
-                setScannedName('');
               }}
               placeholder="0000000000"
               className="bg-transparent w-full text-sm font-mono outline-none placeholder:text-[var(--text-3)]"
@@ -297,16 +247,6 @@ export default function Transfer() {
         <div className="-mt-2 min-h-[1rem]">
           <RecipientLookup accountNumber={recipientAccount} onResult={setLookup} />
         </div>
-
-        {/* Scanned Name */}
-        {scannedName && (
-          <p
-            className="text-xs -mt-2"
-            style={{ color: 'var(--pink-accent)' }}
-          >
-            Scanned: {scannedName}
-          </p>
-        )}
 
         {/* Amount */}
         <div>

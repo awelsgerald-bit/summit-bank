@@ -12,6 +12,7 @@ import {
   Menu,
   ShieldCheck,
   QrCode,
+  ScanLine,
   HandCoins,
   PiggyBank,
   CreditCard,
@@ -44,7 +45,7 @@ const primaryNav = [
 const bottomNav = [
   { to: '/dashboard', label: 'Home', icon: Home },
   { to: '/transfer', label: 'Send', icon: ArrowLeftRight },
-  { to: '/receive', label: 'QR code', icon: QrCode, center: true },
+  { to: '/scan-pay', label: 'QR code', icon: QrCode, center: true },
   { to: '/history', label: 'Activity', icon: History },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
@@ -52,7 +53,8 @@ const bottomNav = [
 // Anything added here automatically shows up in the desktop "More" section
 // and the mobile More sheet — no other wiring needed for future features.
 const moreNav = [
-  { to: '/receive', label: 'Receive', icon: QrCode },
+  { to: '/scan-pay', label: 'Scan & Pay', icon: ScanLine },
+  { to: '/receive', label: 'My QR code', icon: QrCode },
   { to: '/beneficiaries', label: 'Beneficiaries', icon: Users },
   { to: '/loans', label: 'Loans', icon: HandCoins },
   { to: '/save4me', label: 'Save4Me', icon: Coins },
@@ -74,7 +76,7 @@ export default function AppLayout() {
   const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
-    preloadWhenIdle(['/dashboard', '/transfer', '/history', '/receive', '/settings']);
+    preloadWhenIdle(['/dashboard', '/transfer', '/history', '/scan-pay', '/receive', '/settings']);
   }, []);
 
   function handleLogout() {

@@ -48,6 +48,9 @@ _counter = {"n": 0}
 
 @pytest.fixture(autouse=True)
 def fresh_database():
+    from app.services import rate_limit
+
+    rate_limit.reset()
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     yield

@@ -5,6 +5,7 @@ import Avatar from '../components/Avatar';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { errorMessage } from '../utils/errors';
+import BiometricCard from '../components/BiometricCard';
 
 const MAX_PICK_BYTES = 8 * 1024 * 1024;
 
@@ -294,6 +295,8 @@ export default function Settings() {
           {savingPin ? 'Saving...' : user?.has_pin ? 'Change PIN' : 'Set PIN'}
         </button>
       </form>
+
+      <BiometricCard />
 
       <form onSubmit={changePassword} className="glass rounded-3xl p-6 space-y-4">
         <h3 className="font-display text-sm text-[var(--text-2)]">Change password</h3>

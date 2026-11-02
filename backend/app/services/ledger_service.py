@@ -105,6 +105,44 @@ def record_deposit(
     return entry_group_id
 
 
+def record_transfer(
+    db: Session,
+    sender_id: int,
+    receiver_id: int,
+    amount: Decimal,
+    currency: str,
+    reference_transaction_id: int,
+) -> str:
+    """
+    Records a user-to-user transfer as a balanced debit/credit pair:
+    - debit the sender's ledger account (money out)
+    - credit the receiver's ledger account (money in)
+
+    Idempotent: a second call for the same reference_transaction_id is a no-op.
+    """
+    if already_recorded(db, reference_transaction_id, "transfer"):
+        return "already_recorded"
+
+    entry_group_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+
+    for user_id, direction in ((sender_id, "debit"), (receiver_id, "credit")):
+        account = get_or_create_user_account(db, user_id, currency)
+        db.add(LedgerEntry(
+            entry_group_id=entry_group_id,
+            ledger_account_id=account.id,
+            direction=direction,
+            amount=amount,
+            currency=currency,
+            transaction_type="transfer",
+            reference_transaction_id=reference_transaction_id,
+            status="posted",
+            posted_at=now,
+        ))
+
+    return entry_group_id
+
+
 def get_ledger_balance(db: Session, user_id: int, currency: str) -> Decimal:
     """Computes balance purely from ledger entries — independent of User.balance/Wallet.balance."""
     account = (
