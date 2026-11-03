@@ -69,8 +69,10 @@ export default function QrCamera({ onScan }) {
 
     return () => {
       cancelled = true;
-      if (started) scanner.stop().catch(() => {});
-      scanner.clear?.();
+      // clear() throws while the camera is still running, and an error thrown here blanks the whole
+      // page. Stop first, and never let either step raise.
+      const stopping = started ? Promise.resolve().then(() => scanner.stop()).catch(() => {}) : Promise.resolve();
+      stopping.then(() => { try { scanner.clear(); } catch { /* nothing to clear */ } });
     };
   }, []);
 
@@ -82,7 +84,7 @@ export default function QrCamera({ onScan }) {
     try {
       const reader = new Html5Qrcode(FILE_REGION_ID);
       const text = await reader.scanFile(file, false);
-      reader.clear?.();
+      try { reader.clear(); } catch { /* nothing to clear */ }
       if (!doneRef.current) {
         doneRef.current = true;
         onScanRef.current(text);
