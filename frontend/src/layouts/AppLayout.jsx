@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import ErrorBoundary from '../components/ErrorBoundary';
 import {
   Anchor,
   Home,
@@ -73,6 +74,7 @@ const moreNav = [
 export default function AppLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
@@ -161,9 +163,11 @@ export default function AppLayout() {
         <main className="sheet flex-1 rounded-t-[36px] lg:rounded-[32px] px-5 sm:px-8 pt-3 pb-36 lg:pt-8 lg:pb-10 shadow-2xl">
           <div className="w-10 h-1 rounded-full bg-[#c9c3d6] mx-auto mb-5 lg:hidden" aria-hidden="true" />
           <div className="max-w-5xl mx-auto">
-            <Suspense fallback={<PageLoader />}>
-              <Outlet />
-            </Suspense>
+            <ErrorBoundary resetKey={location.pathname}>
+              <Suspense fallback={<PageLoader />}>
+                <Outlet />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         </main>
       </div>
